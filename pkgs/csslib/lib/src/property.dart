@@ -1168,9 +1168,7 @@ class Font implements _StyleProperty {
         other.variant == variant;
   }
 
-  // TODO(terry): This is fragile should probably just iterate through the list
-  //              of fonts construction the font-family string.
-  /// Return fonts as a comma seperated list sans the square brackets.
+  /// Return font family names as a comma-separated list.
   String get _fontsAsString => family?.join(', ') ?? '';
 }
 
