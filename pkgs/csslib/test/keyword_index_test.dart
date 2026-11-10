@@ -20,8 +20,8 @@ void main() {
     expect(TokenKind.matchUnits('foopx', 0, 5), -1);
     expect(TokenKind.matchDirectives('my-import', 3, 6),
         TokenKind.DIRECTIVE_IMPORT);
-    expect(TokenKind.matchMarginDirectives('right-bottom', 0, 12),
-        TokenKind.MARGIN_DIRECTIVE_RIGHTBOTTOM);
+    expect(TokenKind.matchMarginDirectives('right-top', 0, 9),
+        TokenKind.MARGIN_DIRECTIVE_RIGHTTOP);
   });
 
   test('indexed matching agrees with generic linear matcher', () {
