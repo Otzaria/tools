@@ -24,10 +24,9 @@ void main() {
           '<span id="one" class="first common"></span>'
           'text<span id="two" class="second common"></span></div>');
       expect(root.getElementsByTagName('div'), isEmpty);
-      expect(root.getElementsByTagName('SPAN').map((e) => e.id),
-          ['one', 'two']);
-      expect(root.getElementsByTagName('*').map((e) => e.id),
-          ['one', 'two']);
+      expect(
+          root.getElementsByTagName('SPAN').map((e) => e.id), ['one', 'two']);
+      expect(root.getElementsByTagName('*').map((e) => e.id), ['one', 'two']);
       expect(root.getElementsByClassName('common').map((e) => e.id),
           ['one', 'two']);
       expect(root.getElementsByClassName('common first').map((e) => e.id),
@@ -42,11 +41,9 @@ void main() {
         '<div id="one" class="alpha&#9;beta&#10;gamma"></div>'
         '<div id="two" class="alpha beta"></div>',
       );
-      expect(
-          document.getElementsByClassName('alpha\tbeta').map((e) => e.id),
+      expect(document.getElementsByClassName('alpha\tbeta').map((e) => e.id),
           ['one', 'two']);
-      expect(
-          document.getElementsByClassName('gamma\nalpha').map((e) => e.id),
+      expect(document.getElementsByClassName('gamma\nalpha').map((e) => e.id),
           ['one']);
       expect(document.getElementsByClassName(' \n\t '), isEmpty);
       expect(document.getElementsByClassName(''), isEmpty);
@@ -61,10 +58,11 @@ void main() {
     });
 
     test('deep ID, class and tag lookups do not recurse', () {
-      final document = DocumentFragment();
-      var current = Element.tag('div');
-      document.append(current);
-      for (var i = 0; i < 5000; i++) {
+      final fragment = DocumentFragment();
+      final root = Element.tag('div');
+      fragment.append(root);
+      var current = root;
+      for (var i = 0; i < 100000; i++) {
         final child = Element.tag('div');
         current.append(child);
         current = child;
@@ -72,9 +70,9 @@ void main() {
       current.append(Element.tag('span')
         ..id = 'found:123'
         ..className = 'book heading');
-      expect(document.getElementById('found:123')?.localName, 'span');
-      expect(document.getElementsByTagName('span'), hasLength(1));
-      expect(document.getElementsByClassName('book heading'), hasLength(1));
+      expect(fragment.getElementById('found:123')?.localName, 'span');
+      expect(root.getElementsByTagName('span'), hasLength(1));
+      expect(root.getElementsByClassName('book heading'), hasLength(1));
     });
   });
 }
