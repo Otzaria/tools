@@ -42,6 +42,22 @@ void main() {
     expect(original.lineHeightInPixels, 15);
   });
 
+  test('scaling partial font families does not require font size', () {
+    final family = <String>['Alef'];
+    final original = Font(family: family);
+    final scaled = original.scale(1.5);
+
+    expect(scaled.size, isNull);
+    expect(scaled.family, ['Alef']);
+    family.add('serif');
+    expect(scaled.family, ['Alef']);
+
+    const withLineHeight = Font(lineHeight: LineHeight(18));
+    final scaledHeight = withLineHeight.scale(2);
+    expect(scaledHeight.size, isNull);
+    expect(scaledHeight.lineHeight!.height, 36);
+  });
+
   test('font without explicit line height retains its default', () {
     final scaled = const Font(size: 10).scale(3);
     expect(scaled.size, 30);
