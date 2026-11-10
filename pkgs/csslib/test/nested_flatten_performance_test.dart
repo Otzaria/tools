@@ -45,8 +45,8 @@ void main() {
     final output = printer.toString();
     expect(output, contains('@media'));
     expect(output, contains('.inside .nested'));
-    expect(output.indexOf('.before .nested'),
-        lessThan(output.indexOf('@media')));
+    expect(
+        output.indexOf('.before .nested'), lessThan(output.indexOf('@media')));
     expect(output.indexOf('.after .nested'),
         greaterThan(output.indexOf('@media')));
   });
