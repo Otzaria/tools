@@ -19,6 +19,8 @@
   sharing mutable AST nodes between the original and its clone.
 - Preserve nested group terms, IE7-prefixed declaration flags, and variable
   usage state when cloning CSS expression/declaration nodes.
+- Preserve Dart style priorities when cloning and detach mutable font-family
+  lists from cloned font expressions.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to

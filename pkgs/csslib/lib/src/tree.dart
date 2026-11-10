@@ -1620,11 +1620,11 @@ class FontExpression extends DartStyleExpression {
   @override
   FontExpression clone() => FontExpression(span,
       size: font.size,
-      family: font.family,
+      family: font.family?.toList(),
       weight: font.weight,
       style: font.style,
       variant: font.variant,
-      lineHeight: font.lineHeight);
+      lineHeight: font.lineHeight)..priority = priority;
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitFontExpression(this);
@@ -1683,7 +1683,8 @@ class MarginExpression extends BoxExpression {
 
   @override
   MarginExpression clone() => MarginExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left)
+        ..priority = priority;
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitMarginExpression(this);
@@ -1719,7 +1720,8 @@ class BorderExpression extends BoxExpression {
 
   @override
   BorderExpression clone() => BorderExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left)
+        ..priority = priority;
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitBorderExpression(this);
@@ -1741,7 +1743,7 @@ class HeightExpression extends DartStyleExpression {
   }
 
   @override
-  HeightExpression clone() => HeightExpression(span, height);
+  HeightExpression clone() => HeightExpression(span, height)..priority = priority;
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitHeightExpression(this);
 }
@@ -1762,7 +1764,7 @@ class WidthExpression extends DartStyleExpression {
   }
 
   @override
-  WidthExpression clone() => WidthExpression(span, width);
+  WidthExpression clone() => WidthExpression(span, width)..priority = priority;
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitWidthExpression(this);
 }
@@ -1799,7 +1801,8 @@ class PaddingExpression extends BoxExpression {
 
   @override
   PaddingExpression clone() => PaddingExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left)
+        ..priority = priority;
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitPaddingExpression(this);
 }
