@@ -11,18 +11,48 @@ import '../dom.dart';
 class ElementCssClassSet extends _CssClassSetImpl {
   final Element _element;
 
+  // HTML class tokens are separated by ASCII whitespace, not every Unicode
+  // whitespace character. Reuse the pattern when enumerating classes.
+  static final RegExp _classWhitespace = RegExp(r'[ \t\n\f\r]+');
+
   ElementCssClassSet(this._element);
+
+  static bool _isWhitespace(int char) =>
+      char == 0x20 ||
+      char == 0x09 ||
+      char == 0x0A ||
+      char == 0x0C ||
+      char == 0x0D;
+
+  // Selectors call classes.contains for each candidate element. Avoid
+  // allocating a split list and a LinkedHashSet for this hot path.
+  @override
+  bool contains(Object? value) {
+    if (value is! String || value.isEmpty) return false;
+    final classes = _element.className;
+    var i = 0;
+    while (i < classes.length) {
+      while (i < classes.length && _isWhitespace(classes.codeUnitAt(i))) {
+        i++;
+      }
+      final start = i;
+      while (i < classes.length && !_isWhitespace(classes.codeUnitAt(i))) {
+        i++;
+      }
+      if (i - start == value.length && classes.startsWith(value, start)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   Set<String> readClasses() {
     final s = LinkedHashSet<String>();
     final classname = _element.className;
 
-    for (var name in classname.split(' ')) {
-      final trimmed = name.trim();
-      if (trimmed.isNotEmpty) {
-        s.add(trimmed);
-      }
+    for (final name in classname.split(_classWhitespace)) {
+      if (name.isNotEmpty) s.add(name);
     }
     return s;
   }
