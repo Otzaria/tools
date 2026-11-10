@@ -1793,6 +1793,7 @@ class WidthExpression extends DartStyleExpression {
     final result = WidthExpression(span, width);
     return result..priority = priority;
   }
+
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitWidthExpression(this);
 }
@@ -1839,6 +1840,7 @@ class PaddingExpression extends BoxExpression {
     );
     return result..priority = priority;
   }
+
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitPaddingExpression(this);
 }
