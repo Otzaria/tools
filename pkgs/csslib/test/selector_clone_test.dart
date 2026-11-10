@@ -96,4 +96,26 @@ void main() {
     name.name = 'mutated';
     expect(negative.negationArg!.name, 'className');
   });
+
+  test('parsed style sheet clones print identically and share no names', () {
+    final sheet = parse('a:before, p::after, svg|rect, [lang|=he], '
+        'li:nth-child(2n+1):not(.x) > b ~ #i + u, :host(.a) { color: red; }');
+    final copy = sheet.clone();
+
+    String printed(StyleSheet node) =>
+        (CssPrinter()..visitTree(node, pretty: false)).toString();
+    expect(printed(copy), printed(sheet));
+
+    final originalNames = (_IdentifierCollector()..visitTree(sheet)).names;
+    final clonedNames = (_IdentifierCollector()..visitTree(copy)).names;
+    expect(clonedNames, hasLength(originalNames.length));
+    expect(clonedNames.where(originalNames.contains), isEmpty);
+  });
+}
+
+class _IdentifierCollector extends Visitor {
+  final names = Set<Identifier>.identity();
+
+  @override
+  void visitIdentifier(Identifier node) => names.add(node);
 }
