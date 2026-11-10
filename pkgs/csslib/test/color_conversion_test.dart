@@ -36,6 +36,11 @@ void main() {
     expect(Rgba.fromString('rgb(255,0,0)').r, 255);
   });
 
+  test('color string factories reject unsupported colors', () {
+    expect(() => Rgba.fromString('foo'), throwsFormatException);
+    expect(() => Hsla.fromString('foo'), throwsFormatException);
+  });
+
   test('HSL to Color preserves hue and saturation', () {
     expect(Hsla(0, 1, 0.5, 1).color.toHexArgbString(), 'ffff0000');
     expect(Hsla(1 / 3, 1, 0.5).color.toHexArgbString(), '00ff00');
