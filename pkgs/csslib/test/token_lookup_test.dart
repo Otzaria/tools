@@ -47,7 +47,21 @@ void main() {
     );
     expect(errors, isEmpty);
     expect(parsed.topLevels.single, isA<PageDirective>());
+    expect((_MarginSymbols()..visitTree(parsed)).symbols, [
+      TokenKind.MARGIN_DIRECTIVE_LEFTBOTTOM,
+      TokenKind.MARGIN_DIRECTIVE_RIGHTBOTTOM,
+    ]);
     expect(compactOutput(parsed), contains('@left-bottom'));
     expect(compactOutput(parsed), contains('@right-bottom'));
   });
+}
+
+class _MarginSymbols extends Visitor {
+  final symbols = <int>[];
+
+  @override
+  void visitMarginGroup(MarginGroup node) {
+    symbols.add(node.margin_sym);
+    super.visitMarginGroup(node);
+  }
 }

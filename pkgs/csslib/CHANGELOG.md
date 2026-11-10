@@ -20,8 +20,10 @@
   start of `selector()` and `parseSelectorGroup()` input and of style rules.
 - Use native integer hexadecimal formatting for named CSS colors, reducing
   temporary allocations and avoiding hangs on negative conversion inputs.
-- Speed up named CSS color lookup and fix the `@left-bottom` page-margin
-  directive so it no longer aliases `@right-bottom`.
+- Speed up named CSS color lookups by indexing the color table.
+- Recognize the `@left-bottom` page-margin directive, and stop parsing
+  `@right-bottom` as `@left-bottom`.
+- Recognize the `rebeccapurple` color keyword.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
