@@ -1481,6 +1481,7 @@ class GroupTerm extends Expression {
     }
     return copy;
   }
+
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitGroupTerm(this);
 }
