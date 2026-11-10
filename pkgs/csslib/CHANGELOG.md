@@ -30,6 +30,8 @@
   benchmark and regression coverage for Unicode and escaped identifiers.
 - Flatten nested top-level selectors with a single ordered pass instead of
   repeated linear searches and list insertions on large stylesheets.
+- Avoid recursive tokenizer calls when skipping CSS comments and whitespace,
+  preventing stack overflow on comment-heavy stylesheets.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
