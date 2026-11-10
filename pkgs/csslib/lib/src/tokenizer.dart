@@ -27,10 +27,10 @@ class Tokenizer extends TokenizerBase {
 
   @override
   Token next({bool unicodeRange = false}) {
-    // Avoid recursively calling next() for each skipped whitespace/comment
-    // segment. Documents containing many adjacent comments previously grew
-    // the call stack in proportion to the number of comments.
+    // Skip whitespace, comments and CDATA markers in a loop rather than by
+    // recursing into next(), so long runs of them can't overflow the stack.
     if (_inString) {
+      final skipStart = _index;
       var trailingWhitespaceStart = -1;
       while (_index < _text.length) {
         final ch = _text.codeUnitAt(_index);
@@ -78,6 +78,8 @@ class Tokenizer extends TokenizerBase {
         _startIndex = trailingWhitespaceStart;
         return _finishToken(TokenKind.END_OF_FILE);
       }
+      // A unicode range can't span whitespace or comments.
+      if (_index != skipStart) unicodeRange = false;
     }
 
     // Keep track of our starting position.
@@ -448,41 +450,27 @@ class Tokenizer extends TokenizerBase {
   }
 
   Token finishHtmlComment() {
-    while (true) {
-      var ch = _nextChar();
-      if (ch == 0) {
-        return _finishToken(TokenKind.INCOMPLETE_COMMENT);
-      } else if (ch == TokenChar.MINUS) {
-        /* Check if close part of Comment Definition --> (CDC). */
-        if (_maybeEatChar(TokenChar.MINUS)) {
-          if (_maybeEatChar(TokenChar.GREATER)) {
-            if (_inString) {
-              return next();
-            } else {
-              return _finishToken(TokenKind.HTML_COMMENT);
-            }
-          }
-        }
-      }
+    // The comment ends at the first `-->`, even if more dashes precede it.
+    final end = _text.indexOf('-->', _index);
+    if (end < 0) {
+      _index = _text.length;
+      return _finishToken(TokenKind.INCOMPLETE_COMMENT);
     }
+    _index = end + 3;
+    if (_inString) return next();
+    return _finishToken(TokenKind.HTML_COMMENT);
   }
 
   @override
   Token finishMultiLineComment() {
-    while (true) {
-      var ch = _nextChar();
-      if (ch == 0) {
-        return _finishToken(TokenKind.INCOMPLETE_COMMENT);
-      } else if (ch == 42 /*'*'*/) {
-        if (_maybeEatChar(47 /*'/'*/)) {
-          if (_inString) {
-            return next();
-          } else {
-            return _finishToken(TokenKind.COMMENT);
-          }
-        }
-      }
+    final end = _text.indexOf('*/', _index);
+    if (end < 0) {
+      _index = _text.length;
+      return _finishToken(TokenKind.INCOMPLETE_COMMENT);
     }
+    _index = end + 2;
+    if (_inString) return next();
+    return _finishToken(TokenKind.COMMENT);
   }
 }
 

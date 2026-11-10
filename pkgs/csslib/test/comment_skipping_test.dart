@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:csslib/parser.dart';
+import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -30,5 +31,29 @@ void main() {
     final tree = parse('/* leading */ \n /* trailing */', errors: errors);
     expect(errors, isEmpty);
     expect(tree.topLevels, isEmpty);
+  });
+
+  test('HTML comment ends at the first -->', () {
+    final errors = <Message>[];
+    final tree =
+        parse('<!-- header ---> .entry { color: red; }', errors: errors);
+    expect(errors, isEmpty);
+    expect(tree.topLevels, hasLength(1));
+  });
+
+  test('NUL character does not end a comment', () {
+    final errors = <Message>[];
+    final tree =
+        parse('/* a \u0000 b */ .entry { color: red; }', errors: errors);
+    expect(errors, isEmpty);
+    expect(tree.topLevels, hasLength(1));
+  });
+
+  test('unicode range does not continue after whitespace or comments', () {
+    for (final input in [' 10', '/**/10']) {
+      final tokenizer = Tokenizer(SourceFile.fromString(input), input, true);
+      expect(tokenizer.next(unicodeRange: true).kind, TokenKind.INTEGER,
+          reason: input);
+    }
   });
 }
