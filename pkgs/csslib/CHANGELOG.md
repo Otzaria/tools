@@ -18,6 +18,8 @@
   now throw a `FormatException`.
 - Correctly parse unit-like type selectors (`rem`, `vw`, `dpi`, etc.) at the
   start of `selector()` and `parseSelectorGroup()` input and of style rules.
+- Use native integer hexadecimal formatting for named CSS colors, reducing
+  temporary allocations and avoiding hangs on negative conversion inputs.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
