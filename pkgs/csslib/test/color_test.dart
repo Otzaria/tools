@@ -42,10 +42,19 @@ void main() {
       expect(Color.css('Transparent').toHexArgbString(), '00000000');
     });
 
+    test('Rgba and Hsla fromString keep the alpha channel in place', () {
+      expect(Rgba.fromString('rgba(255, 0, 0, 0.5)').toHexArgbString(),
+          '80ff0000');
+      expect(Rgba.fromString('#ff000080').toHexArgbString(), '80ff0000');
+      expect(Hsla.fromString('#ff000080').toHexArgbString(), '80ff0000');
+    });
+
     test('empty and malformed CSS hex is rejected predictably', () {
       expect(() => Color.css(''), throwsFormatException);
       expect(() => Color.css('  '), throwsFormatException);
       expect(() => Color.css('#12'), throwsFormatException);
+      expect(() => Color.css('#-12345'), throwsFormatException);
+      expect(() => Color.css('# 12345'), throwsFormatException);
     });
   });
 
