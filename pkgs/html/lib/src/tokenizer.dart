@@ -168,8 +168,8 @@ class HtmlTokenizer implements Iterator<Token> {
       radix = 16;
     }
 
-    // Numeric references can occur very frequently in HTML books. Avoid
-    // allocating a growable List and one String per numeric digit.
+    // Consume all the characters that are in range while making sure we
+    // don't hit an EOF.
     final digits = StringBuffer();
     var c = stream.char();
     while (allowed(c) && c != eof) {
@@ -177,7 +177,7 @@ class HtmlTokenizer implements Iterator<Token> {
       c = stream.char();
     }
 
-    // Keep int.tryParse's overflow behavior (U+FFFD on invalid values).
+    // Convert the characters consumed to an int; overflow becomes U+FFFD.
     final charAsInt = int.tryParse(digits.toString(), radix: radix) ?? 0x110000;
 
     // Certain characters get replaced with others
@@ -297,8 +297,8 @@ class HtmlTokenizer implements Iterator<Token> {
       // that may match an entity
       String? entityName;
 
-      // Reuse the consumed text when checking shorter entity prefixes.
-      // In particular, avoid allocating a new List for each candidate.
+      // Try to find the longest entity the string will match to take care
+      // of &noti for instance. All but the last char matched the ASCII trie.
       final consumed = charStack.join();
       int entityLen;
       for (entityLen = charStack.length - 1; entityLen > 1; entityLen--) {
