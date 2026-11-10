@@ -111,6 +111,22 @@ void main() {
     });
   });
 
+  test('children.forEach is safe when callbacks remove children', () {
+    final parent = Element.tag('div');
+    final one = Element.tag('b');
+    final two = Element.tag('i');
+    parent.nodes.addAll([one, Text('text'), two]);
+    final visited = <Element>[];
+    parent.children.forEach((child) {
+      visited.add(child);
+      child.remove();
+    });
+    expect(visited, [one, two]);
+    expect(parent.children, isEmpty);
+    expect(one.parentNode, isNull);
+    expect(two.parentNode, isNull);
+  });
+
   test('live children traversal ignores non-elements and preserves order', () {
     final parent = Element.tag('div')
       ..append(Text('before'))
