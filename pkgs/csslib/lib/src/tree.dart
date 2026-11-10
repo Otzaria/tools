@@ -1053,9 +1053,17 @@ class Declaration extends TreeNode {
   SourceSpan get span => super.span!;
 
   @override
-  Declaration clone() =>
-      Declaration(_property?.clone(), expression?.clone(), dartStyle, span,
-          important: important, ie7: isIE7);
+  Declaration clone() {
+    final style = dartStyle?.clone() as DartStyleExpression?;
+    return Declaration(
+      _property?.clone(),
+      expression?.clone(),
+      style,
+      span,
+      important: important,
+      ie7: isIE7,
+    );
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitDeclaration(this);
