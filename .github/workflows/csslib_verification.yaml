@@ -1,0 +1,48 @@
+name: csslib verification
+
+on:
+  push:
+    branches:
+      - main
+      - palmoni5/csslib-ci-hard-fail-20261110
+    paths:
+      - 'pkgs/csslib/**'
+      - '.github/workflows/csslib_verification.yaml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'pkgs/csslib/**'
+      - '.github/workflows/csslib_verification.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: pkgs/csslib
+
+jobs:
+  verify:
+    name: Dart ${{ matrix.sdk }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        sdk: [stable]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: Resolve dependencies
+        run: dart pub get
+      - name: Dart formatter
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Static analysis
+        run: dart analyze --fatal-infos
+      - name: VM regression suite
+        run: dart test --platform vm --reporter expanded
