@@ -22,36 +22,33 @@ void main() {
         TokenKind.MARGIN_DIRECTIVE_RIGHTTOP);
   });
 
-  test('indexed matching agrees with generic linear matcher', () {
-    final candidates = [
-      'em',
-      'rem',
-      'px',
-      'foo',
-      'font-size',
-      'media',
-      'supports',
-      'left-top',
-      'right-bottom',
-      'and',
-      'only',
-    ];
-    for (final word in candidates) {
-      expect(
-        TokenKind.matchUnits(word, 0, word.length),
-        TokenKind.matchList(
-          const [
-            {'unit': TokenKind.UNIT_EM, 'value': 'em'},
-            {'unit': TokenKind.UNIT_REM, 'value': 'rem'},
-            {'unit': TokenKind.UNIT_LENGTH_PX, 'value': 'px'},
-          ],
-          'unit',
-          word,
-          0,
-          word.length,
-        ),
-        reason: word,
-      );
+  test('indexed matching agrees with the linear matcher on full tables', () {
+    for (var unit = TokenKind.UNIT_EM; unit < 700; unit++) {
+      final name = TokenKind.unitToString(unit)!;
+      if (name == '<BAD UNIT>') continue;
+      expect(TokenKind.matchUnits(name, 0, name.length), unit, reason: name);
+      final upper = 'x${name.toUpperCase()}';
+      expect(TokenKind.matchUnits(upper, 1, name.length), unit, reason: name);
     }
+
+    void checkTable(List<Map<String, Object>> table,
+        int Function(String, int, int) indexed) {
+      for (final entry in table) {
+        final value = entry['value'] as String;
+        for (final word in [
+          value,
+          value.toUpperCase(),
+          '${value}x',
+          value.substring(1),
+        ]) {
+          expect(indexed(word, 0, word.length),
+              TokenKind.matchList(table, 'type', word, 0, word.length),
+              reason: word);
+        }
+      }
+    }
+
+    checkTable(TokenKind.MARGIN_DIRECTIVES, TokenKind.matchMarginDirectives);
+    checkTable(TokenKind.MEDIA_OPERATORS, TokenKind.matchMediaOperator);
   });
 }
