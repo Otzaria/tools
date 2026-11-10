@@ -127,14 +127,18 @@ Iterable<Element> _descendantElements(Node root) sync* {
 
 final RegExp _htmlClassWhitespace = RegExp(r'[ \t\n\f\r]+');
 
+bool _isHtmlClassWhitespace(int code) =>
+    code == 0x09 ||
+    code == 0x0A ||
+    code == 0x0C ||
+    code == 0x0D ||
+    code == 0x20;
+
 bool _hasHtmlClassToken(String source, String token) {
   var start = 0;
   for (var i = 0; i <= source.length; i++) {
-    final separator = i == source.length ||
-        switch (source.codeUnitAt(i)) {
-          0x09 || 0x0A || 0x0C || 0x0D || 0x20 => true,
-          _ => false,
-        };
+    final separator =
+        i == source.length || _isHtmlClassWhitespace(source.codeUnitAt(i));
     if (!separator) continue;
     if (i - start == token.length && source.startsWith(token, start)) {
       return true;
