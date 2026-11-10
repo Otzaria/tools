@@ -43,15 +43,16 @@ void main() {
     });
   });
 
-  test('class selectors handle ASCII whitespace without allocations', () {
-    final element = Element.tag('span')
-      ..className = 'foo\tbar\nbaz\rqux\fquux';
+  test('class tokens are separated by ASCII whitespace only', () {
+    final element = Element.tag('span')..className = 'foo\tbar\nbaz\rqux\fquux';
     expect(element.classes.contains('bar'), isTrue);
     expect(element.classes.contains('qux'), isTrue);
     expect(element.classes.contains('foo bar'), isFalse);
     expect(element.classes, {'foo', 'bar', 'baz', 'qux', 'quux'});
     final parent = Element.tag('div')..append(element);
     expect(parent.querySelector('.baz'), same(element));
+    expect(parent.querySelector('[class~=qux]'), same(element));
+    expect(parent.querySelector('[class~="bar baz"]'), isNull);
     element.className = 'foo\u00a0bar';
     expect(element.classes.contains('foo'), isFalse);
     expect(element.classes.contains('foo\u00a0bar'), isTrue);
@@ -60,7 +61,7 @@ void main() {
   test('deep descendant queries retain preorder without recursion', () {
     final root = Element.tag('main');
     var current = root;
-    for (var i = 0; i < 5000; i++) {
+    for (var i = 0; i < 100000; i++) {
       final child = Element.tag('section');
       current.append(child);
       current = child;
