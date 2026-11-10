@@ -281,9 +281,12 @@ class AttributeSelector extends SimpleSelector {
   }
 
   @override
-  AttributeSelector clone() =>
-      AttributeSelector((_name as Identifier).clone(), _op,
-          value is TreeNode ? (value as TreeNode).clone() : value, span);
+  AttributeSelector clone() {
+    final copiedName = (_name as Identifier).clone();
+    final copiedValue =
+        value is TreeNode ? (value as TreeNode).clone() : value;
+    return AttributeSelector(copiedName, _op, copiedValue, span);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitAttributeSelector(this);
@@ -342,8 +345,10 @@ class PseudoElementSelector extends SimpleSelector {
       visitor.visitPseudoElementSelector(this);
 
   @override
-  PseudoElementSelector clone() => PseudoElementSelector(
-      (_name as Identifier).clone(), span, isLegacy: isLegacy);
+  PseudoElementSelector clone() {
+    final name = (_name as Identifier).clone();
+    return PseudoElementSelector(name, span, isLegacy: isLegacy);
+  }
 
   @override
   String toString() => "${isLegacy ? ':' : '::'}$name";
