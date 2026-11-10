@@ -339,7 +339,7 @@ class Tokenizer extends TokenizerBase {
         eatHexDigits(startHex + 6);
         if (_index != startHex) {
           final hexVal =
-              int.tryParse('0x' + _text.substring(startHex, _index)) ?? 0xFFFD;
+              int.tryParse('0x${_text.substring(startHex, _index)}') ?? 0xFFFD;
           decoded.writeCharCode(hexVal <= 0x10FFFF ? hexVal : 0xFFFD);
 
           if (_index == _text.length) break;
