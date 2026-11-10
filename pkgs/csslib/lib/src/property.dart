@@ -590,10 +590,7 @@ class Rgba implements _StyleProperty, ColorBase {
 
   @override
   int get argbValue =>
-      ((a == null ? 0 : (a! * 255).round()) << 24) |
-      (r << 16) |
-      (g << 8) |
-      b;
+      ((a == null ? 0 : (a! * 255).round()) << 24) | (r << 16) | (g << 8) | b;
 
   Color get color => Color.createRgba(r, g, b, a);
   Hsla get hsla => Hsla.fromRgba(this);
