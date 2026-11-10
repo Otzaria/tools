@@ -4,6 +4,7 @@
 
 import 'package:csslib/parser.dart';
 import 'package:csslib/visitor.dart';
+import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -78,7 +79,8 @@ void main() {
     final firstSequence = clonedArgument.simpleSelectorSequences.single;
     expect(firstSequence.simpleSelector.name, 'item');
 
-    final expr = SelectorExpression([NumberTerm(2, '2', null)], null);
+    final span = SourceFile.fromString('2').span(0, 1);
+    final expr = SelectorExpression([NumberTerm(2, '2', span)], span);
     final pseudo = PseudoElementFunctionSelector(
       Identifier('part', null),
       expr,
