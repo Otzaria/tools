@@ -8,6 +8,33 @@ import 'dart:collection';
 
 import '../dom.dart';
 
+// Scans class tokens without creating an ElementCssClassSet or temporary set.
+// HTML's class separator is ASCII whitespace (not arbitrary Unicode space).
+bool hasHtmlClassToken(String classes, String value) {
+  if (value.isEmpty) return false;
+  var i = 0;
+  while (i < classes.length) {
+    while (i < classes.length && _isWhitespace(classes.codeUnitAt(i))) {
+      i++;
+    }
+    final start = i;
+    while (i < classes.length && !_isWhitespace(classes.codeUnitAt(i))) {
+      i++;
+    }
+    if (i - start == value.length && classes.startsWith(value, start)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool _isWhitespace(int char) =>
+    char == 0x20 ||
+    char == 0x09 ||
+    char == 0x0A ||
+    char == 0x0C ||
+    char == 0x0D;
+
 class ElementCssClassSet extends _CssClassSetImpl {
   final Element _element;
 
@@ -17,34 +44,10 @@ class ElementCssClassSet extends _CssClassSetImpl {
 
   ElementCssClassSet(this._element);
 
-  static bool _isWhitespace(int char) =>
-      char == 0x20 ||
-      char == 0x09 ||
-      char == 0x0A ||
-      char == 0x0C ||
-      char == 0x0D;
-
-  // Selectors call classes.contains for each candidate element. Avoid
-  // allocating a split list and a LinkedHashSet for this hot path.
+  // Selectors use the direct helper to avoid allocating a set wrapper.
   @override
-  bool contains(Object? value) {
-    if (value is! String || value.isEmpty) return false;
-    final classes = _element.className;
-    var i = 0;
-    while (i < classes.length) {
-      while (i < classes.length && _isWhitespace(classes.codeUnitAt(i))) {
-        i++;
-      }
-      final start = i;
-      while (i < classes.length && !_isWhitespace(classes.codeUnitAt(i))) {
-        i++;
-      }
-      if (i - start == value.length && classes.startsWith(value, start)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  bool contains(Object? value) =>
+      value is String && hasHtmlClassToken(_element.className, value);
 
   @override
   Set<String> readClasses() {
