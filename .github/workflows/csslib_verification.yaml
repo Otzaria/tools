@@ -50,3 +50,20 @@ jobs:
         run: dart analyze --fatal-infos
       - name: VM regression suite
         run: dart test --platform vm --reporter expanded
+      - name: Baseline versus optimized parser benchmarks
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../.. fetch --depth=1 origin main:refs/remotes/origin/main
+          baseline_dir="$(mktemp -d)"
+          git -C ../.. worktree add --detach "$baseline_dir" origin/main
+          mkdir -p "$baseline_dir/pkgs/csslib/benchmark"
+          cp benchmark/tokenizer_benchmark.dart "$baseline_dir/pkgs/csslib/benchmark/"
+          cp benchmark/nested_flatten_benchmark.dart "$baseline_dir/pkgs/csslib/benchmark/"
+          echo "BASELINE / main"
+          (cd "$baseline_dir/pkgs/csslib" && dart pub get >/dev/null && dart run benchmark/tokenizer_benchmark.dart && dart run benchmark/nested_flatten_benchmark.dart)
+          echo "OPTIMIZED / integration"
+          dart run benchmark/tokenizer_benchmark.dart
+          dart run benchmark/nested_flatten_benchmark.dart
+          git -C ../.. worktree remove --force "$baseline_dir"
