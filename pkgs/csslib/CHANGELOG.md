@@ -8,14 +8,15 @@
 - Correct CSS namespace URI serialization in pretty-printed stylesheets while
   preserving compact `url()` representation.
 - Fix fractional alpha in the numeric `Color` constructor and normalize CSS
-  short and eight-digit hex colors, with validation of malformed input.
+  short and eight-digit hex colors, with validation of malformed input and
+  unknown color names.
   `Color.css` also accepts named colors and `transparent`, and
   `Rgba.fromString`/`Hsla.fromString` now parse their argument only once.
 - `Color.css` now reads the `hsl()`/`hsla()` hue as a CSS angle (degrees by
   default, or `deg`, `grad`, `rad` and `turn`) instead of a 0..1 fraction, and
   accepts percentages for saturation, lightness, RGB channels and alpha.
-  Functional colors with the wrong number of components or non-finite values
-  now throw a `FormatException`.
+  Functional colors with the wrong number of components or invalid or
+  non-finite values now throw a `FormatException` whose source is the color.
 - Correctly parse unit-like type selectors (`rem`, `vw`, `dpi`, etc.) at the
   start of `selector()` and `parseSelectorGroup()` input and of style rules.
 - Use native integer hexadecimal formatting for named CSS colors, reducing
@@ -23,7 +24,7 @@
 - Speed up named CSS color lookups by indexing the color table.
 - Recognize the `@left-bottom` page-margin directive, and stop parsing
   `@right-bottom` as `@left-bottom`.
-- Recognize the `rebeccapurple` color keyword.
+- Recognize the `rebeccapurple` color keyword and add `Color.rebeccaPurple`.
 - Reduce repeated CSS unit, directive, and media keyword scans by indexing
   keyword tables by length while retaining allocation-free token matching.
 - Reduce allocations when tokenizing ordinary CSS identifiers; add a parsing
