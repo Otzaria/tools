@@ -573,12 +573,9 @@ class TokenKind {
   }
 
   static String decimalToHex(int number, [int minDigits = 1]) {
-    // Native integer conversion avoids allocating a reversed digit list and
-    // StringBuffer for every named CSS color.
     final hex = number.toRadixString(16);
     if (number < 0) {
-      // Arithmetic right shifts never reach zero for negative integers, so
-      // the old hand-written conversion loop could run forever.
+      // Pad the digits, not the sign.
       return '-${hex.substring(1).padLeft(minDigits, '0')}';
     }
     return hex.padLeft(minDigits, '0');
