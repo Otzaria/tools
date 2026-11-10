@@ -35,6 +35,13 @@ void main() {
       expect(Color.css('  #FF0000  '), Color(0xff0000));
     });
 
+    test('Color.css accepts named color keywords and transparent', () {
+      expect(Color.css('red'), Color(0xff0000));
+      expect(Color.css('ALICEBLUE'), Color(0xf0f8ff));
+      expect(Color.css('transparent').toHexArgbString(), '00000000');
+      expect(Color.css('Transparent').toHexArgbString(), '00000000');
+    });
+
     test('empty and malformed CSS hex is rejected predictably', () {
       expect(() => Color.css(''), throwsFormatException);
       expect(() => Color.css('  '), throwsFormatException);
