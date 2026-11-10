@@ -11,8 +11,11 @@
   short and eight-digit hex colors, with validation of malformed input.
   `Color.css` also accepts named colors and `transparent`, and
   `Rgba.fromString`/`Hsla.fromString` now parse their argument only once.
-- Parse CSS HSL angles and percentages correctly, including functional RGB
-  percentages, alpha percentages, and malformed component validation.
+- `Color.css` now reads the `hsl()`/`hsla()` hue as a CSS angle (degrees by
+  default, or `deg`, `grad`, `rad` and `turn`) instead of a 0..1 fraction, and
+  accepts percentages for saturation, lightness, RGB channels and alpha.
+  Functional colors with the wrong number of components or non-finite values
+  now throw a `FormatException`.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
