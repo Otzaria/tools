@@ -4,6 +4,7 @@
 
 import 'package:csslib/parser.dart';
 import 'package:csslib/visitor.dart';
+import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
 import 'testing.dart';
@@ -28,16 +29,19 @@ void main() {
     expect(declarations.last.important, isTrue);
   });
 
-  test('hex-escaped identifiers retain their raw spelling', () {
-    final errors = <Message>[];
-    final ast = selector(r'.\35 00px', errors: errors);
-    expect(errors, isEmpty);
-    expect(compactOutput(ast), r'.\35 00px');
+  test('escaped identifiers are decoded and keep their raw span', () {
+    String decode(String css) {
+      final token = Tokenizer(SourceFile.fromString(css), css, true).next();
+      expect(token, isA<IdentifierToken>());
+      expect(token.span.text, css);
+      return (token as IdentifierToken).text;
+    }
 
-    errors.clear();
-    final attr = selector(r'[elevation=\31]', errors: errors);
-    expect(errors, isEmpty);
-    expect(compactOutput(attr), r'[elevation=\31]');
+    expect(decode(r'ab\31 c'), 'ab1c');
+    expect(decode(r'a\:b'), 'a:b');
+    expect(decode(r'x\1F600'), 'x\u{1F600}');
+    expect(decode(r'x\110000'), 'x�');
+    expect(decode(r'שלום\5d'), 'שלום]');
   });
 
   test('long plain identifiers do not change parsed output', () {
