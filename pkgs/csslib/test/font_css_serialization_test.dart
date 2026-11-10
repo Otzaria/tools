@@ -23,11 +23,11 @@ void main() {
   });
 
   test('font CSS keeps weight and explicit line height', () {
-    final font = Font(
+    const font = Font(
       size: 16,
       weight: FontWeight.bold,
-      lineHeight: const LineHeight(24),
-      family: const ['Alef'],
+      lineHeight: LineHeight(24),
+      family: ['Alef'],
     );
     expect(font.cssExpression, '700 16px/24 Alef');
   });
