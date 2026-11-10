@@ -205,18 +205,13 @@ class Color implements _StyleProperty, ColorBase {
   // Conversion routines:
 
   static String _rgbToArgbString(int rgba, num? alpha) {
-    num? a;
-    // If alpha is defined then adjust from 0..1 to 0..255 value, if not set
-    // then a is left as undefined and passed to convertToHexString.
-    if (alpha != null) {
-      a = (Color._clamp(alpha, 0, 1) * 255).round();
-    }
-
+    // convertToHexString already takes alpha in the range 0..1 and converts it
+    // to an 8-bit channel. Multiplying here made every nonzero alpha opaque.
     var r = (rgba & 0xff0000) >> 0x10;
     var g = (rgba & 0xff00) >> 8;
     var b = rgba & 0xff;
 
-    return Color.convertToHexString(r, g, b, a);
+    return Color.convertToHexString(r, g, b, alpha);
   }
 
   static const int _rgbCss = 1;
@@ -229,12 +224,31 @@ class Color implements _StyleProperty, ColorBase {
   /// convert to argb.
   static String? _convertCssToArgb(String value) {
     // TODO(terry): Better parser/regex for converting CSS properties.
-    var color = value.trim().replaceAll('\\s', '');
-    if (color[0] == '#') {
-      var v = color.substring(1);
-      Color.hexToInt(v); // Valid hexadecimal, throws if not.
-      return v;
-    } else if (color.isNotEmpty && color[color.length - 1] == ')') {
+    var color = value.trim();
+    if (color.isEmpty) {
+      throw FormatException('Empty CSS color', value);
+    }
+    if (color.startsWith('#')) {
+      var digits = color.substring(1);
+      if (digits.length == 3 || digits.length == 4) {
+        final expanded = StringBuffer();
+        for (var i = 0; i < digits.length; i++) {
+          expanded
+            ..write(digits[i])
+            ..write(digits[i]);
+        }
+        digits = expanded.toString();
+      }
+      if (digits.length != 6 && digits.length != 8) {
+        throw FormatException('Invalid CSS hexadecimal color', value);
+      }
+      Color.hexToInt(digits); // Validate hexadecimal digits.
+      if (digits.length == 8) {
+        // CSS #rrggbbaa is stored internally as aarrggbb.
+        return (digits.substring(6) + digits.substring(0, 6)).toLowerCase();
+      }
+      return digits.toLowerCase();
+    } else if (color.endsWith(')')) {
       int type;
       if (color.indexOf('rgb(') == 0 || color.indexOf('RGB(') == 0) {
         color = color.substring(4);
