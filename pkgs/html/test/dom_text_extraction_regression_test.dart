@@ -21,11 +21,16 @@ void main() {
   });
 
   test('ordinary BR is a line break but SVG BR is not', () {
-    final fragment = parseFragment(
-      '<div>before<br>after<svg><br>inside</br></svg>end</div>',
-    );
+    final svgBr = Document().createElementNS('http://www.w3.org/2000/svg', 'br')
+      ..append(Text('inside'));
+    final root = Element.tag('div')
+      ..append(Text('before'))
+      ..append(Element.tag('br'))
+      ..append(Text('after'))
+      ..append(svgBr)
+      ..append(Text('end'));
     expect(
-      fragment.children.first.textContent(convertBRsToNewlines: true),
+      root.textContent(convertBRsToNewlines: true),
       'before\nafterinsideend',
     );
   });
