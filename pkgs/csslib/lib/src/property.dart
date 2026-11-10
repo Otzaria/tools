@@ -318,7 +318,8 @@ class Color implements _StyleProperty, ColorBase {
           degrees = parseNumber(trimmed);
         }
         // CSS hue is an angle, not the 0..1 fraction expected by Hsla.
-        return ((degrees % 360) + 360) % 360 / 360;
+        // Dart's `%` is never negative here, so -120 wraps to 240 too.
+        return degrees % 360 / 360;
       }
 
       switch (type) {
