@@ -23,7 +23,7 @@ void main() {
   });
 
   test('ARGB round-trips retain each alpha byte, including 0x7f', () {
-    expect(Color.hex('7f112233').rgba.toHexArgbString(), '7f112233');
+    expect(const Color.hex('7f112233').rgba.toHexArgbString(), '7f112233');
     expect(Hsla.fromArgbValue(0x7f808080).toHexArgbString(), '7f808080');
   });
 
