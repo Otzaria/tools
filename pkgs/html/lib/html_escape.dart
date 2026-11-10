@@ -19,9 +19,7 @@
 /// [1]: https://html.spec.whatwg.org/multipage/parsing.html#serializing-html-fragments
 /// [2]: https://html.spec.whatwg.org/multipage/parsing.html#escapingString
 String htmlSerializeEscape(String text, {bool attributeMode = false}) {
-  // Scan UTF-16 code units without allocating one-character strings.
-  // Copy unchanged runs at once; return the original String when no escaping
-  // is needed, which is common for text-heavy HTML.
+  // Copy unchanged runs at once instead of one-character strings.
   StringBuffer? result;
   var last = 0;
   for (var i = 0; i < text.length; i++) {
