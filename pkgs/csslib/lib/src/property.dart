@@ -1129,7 +1129,7 @@ class Font implements _StyleProperty {
             inPixels: currentLineHeight.inPixels,
           );
     return Font(
-      size: size! * ratio,
+      size: size == null ? null : size! * ratio,
       family: family?.toList(),
       weight: weight,
       style: style,
