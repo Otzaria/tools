@@ -168,18 +168,17 @@ class HtmlTokenizer implements Iterator<Token> {
       radix = 16;
     }
 
-    final charStack = <String?>[];
-
-    // Consume all the characters that are in range while making sure we
-    // don't hit an EOF.
+    // Numeric references can occur very frequently in HTML books. Avoid
+    // allocating a growable List and one String per numeric digit.
+    final digits = StringBuffer();
     var c = stream.char();
     while (allowed(c) && c != eof) {
-      charStack.add(c);
+      digits.write(c);
       c = stream.char();
     }
 
-    // Convert the set of characters consumed to an int.
-    final charAsInt = int.tryParse(charStack.join(), radix: radix) ?? 0x110000;
+    // Keep int.tryParse's overflow behavior (U+FFFD on invalid values).
+    final charAsInt = int.tryParse(digits.toString(), radix: radix) ?? 0x110000;
 
     // Certain characters get replaced with others
     var char = replacementCharacters[charAsInt];
@@ -298,11 +297,12 @@ class HtmlTokenizer implements Iterator<Token> {
       // that may match an entity
       String? entityName;
 
-      // Try to find the longest entity the string will match to take care
-      // of &noti for instance.
+      // Reuse the consumed text when checking shorter entity prefixes.
+      // In particular, avoid allocating a new List for each candidate.
+      final consumed = charStack.join();
       int entityLen;
       for (entityLen = charStack.length - 1; entityLen > 1; entityLen--) {
-        final possibleEntityName = charStack.sublist(0, entityLen).join();
+        final possibleEntityName = consumed.substring(0, entityLen);
         if (entities.containsKey(possibleEntityName)) {
           entityName = possibleEntityName;
           break;
