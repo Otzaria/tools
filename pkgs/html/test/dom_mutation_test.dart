@@ -58,6 +58,19 @@ void main() {
       }
     });
 
+    test('insertBefore moves an earlier sibling before the reference', () {
+      final parent = Element.tag('div');
+      final a = Element.tag('a');
+      final b = Element.tag('b');
+      final c = Element.tag('c');
+      parent.nodes.addAll([a, b, c]);
+      parent.insertBefore(a, c);
+      expect(parent.nodes, [b, a, c]);
+      a.remove();
+      expect(a.parentNode, isNull);
+      expect(parent.nodes, [b, c]);
+    });
+
     test('insertAll moves siblings without duplicates', () {
       final parent = Element.tag('div');
       final a = Element.tag('a');
@@ -117,10 +130,12 @@ void main() {
     final two = Element.tag('i');
     parent.nodes.addAll([one, Text('text'), two]);
     final visited = <Element>[];
-    parent.children.forEach((child) {
+    void visitAndRemove(Element child) {
       visited.add(child);
       child.remove();
-    });
+    }
+
+    parent.children.forEach(visitAndRemove);
     expect(visited, [one, two]);
     expect(parent.children, isEmpty);
     expect(one.parentNode, isNull);
@@ -141,6 +156,6 @@ void main() {
     expect(parent.children.reversed.map((e) => e.localName), ['i', 'b']);
     expect(parent.children[0].localName, 'b');
     expect(parent.children[1].localName, 'i');
-    expect(parent.children.join(','), '<b>,<i>');
+    expect(parent.children.join(','), '<html b>,<html i>');
   });
 }

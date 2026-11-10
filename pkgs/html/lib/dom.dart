@@ -813,8 +813,7 @@ class NodeList extends ListProxy<Node> {
     if (element is DocumentFragment) {
       insertAll(index, element.nodes);
     } else {
-      if (identical(element.parentNode, _parent) &&
-          indexOf(element) < index) {
+      if (identical(element.parentNode, _parent) && indexOf(element) < index) {
         index--;
       }
       super.insert(index, _setParent(element));
@@ -844,8 +843,7 @@ class NodeList extends ListProxy<Node> {
       if (identical(this[index], value)) return;
       // Removing a sibling before the target shifts its index. Detach first,
       // then replace the node at the adjusted position.
-      if (identical(value.parentNode, _parent) &&
-          indexOf(value) < index) {
+      if (identical(value.parentNode, _parent) && indexOf(value) < index) {
         index--;
       }
       value.remove();
