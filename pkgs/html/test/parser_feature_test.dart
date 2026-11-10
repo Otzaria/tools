@@ -13,9 +13,13 @@ import 'package:html/src/constants.dart';
 import 'package:html/src/encoding_parser.dart';
 import 'package:html/src/treebuilder.dart';
 import 'package:source_span/source_span.dart';
+import 'package:term_glyph/term_glyph.dart' as glyph;
 import 'package:test/test.dart';
 
 void main() {
+  // Spans use ASCII glyphs on Windows terminals; the expectations use Unicode.
+  setUpAll(() => glyph.ascii = false);
+
   _testElementSpans();
 
   test('CDATA parser differential avoids XSS payload hiding (b/536201494)', () {
