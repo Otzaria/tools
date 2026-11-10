@@ -562,15 +562,21 @@ class TokenKind {
   /// Return RGB value as [int] from a color entry in _EXTENDED_COLOR_NAMES.
   static int colorValue(Map<String, Object> entry) => entry['value'] as int;
 
-  static String? hexToColorName(Object hexValue) {
+  // Match the old linear scan's first-name-wins behavior for aliases such as
+  // aqua/cyan and fuchsia/magenta, while avoiding a scan for every print.
+  static final Map<int, String> _colorNamesByValue = () {
+    final colors = <int, String>{};
     for (final entry in _EXTENDED_COLOR_NAMES) {
-      if (entry['value'] == hexValue) {
-        return entry['name'] as String?;
-      }
+      colors.putIfAbsent(
+        entry['value'] as int,
+        () => entry['name'] as String,
+      );
     }
+    return colors;
+  }();
 
-    return null;
-  }
+  static String? hexToColorName(Object hexValue) =>
+      _colorNamesByValue[hexValue];
 
   static String decimalToHex(int number, [int minDigits = 1]) {
     final hex = number.toRadixString(16);
