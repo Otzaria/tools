@@ -93,13 +93,15 @@ class HtmlInputStream {
 
     final rawChars = _rawChars ??= _decodeBytes(charEncodingName!, _rawBytes!);
 
-    // Optimistically allocate array, trim it later if there are changes
-    _chars = List.filled(rawChars.length, 0, growable: true);
+    // The common case has no CR/CRLF or malformed surrogates. Keep the
+    // decoded code units directly and copy only if normalization changes them.
+    // This avoids a second full-size allocation for ordinary HTML (including
+    // Hebrew text). Never modify rawChars: reset() must remain repeatable.
+    var chars = rawChars;
     var skipNewline = false;
     var wasSurrogatePair = false;
     var deletedChars = 0;
 
-    /// CodeUnits.length is not free
     final charsLength = rawChars.length;
     for (var i = 0; i < charsLength; i++) {
       var c = rawChars[i];
@@ -130,12 +132,17 @@ class HtmlInputStream {
         c = Charcode.lineFeed;
       }
 
-      _chars[i - deletedChars] = c;
+      if (c != rawChars[i] && identical(chars, rawChars)) {
+        chars = List<int>.of(rawChars, growable: true);
+      }
+      if (!identical(chars, rawChars)) {
+        chars[i - deletedChars] = c;
+      }
     }
     if (deletedChars > 0) {
-      // Remove the null bytes from the end
-      _chars.removeRange(_chars.length - deletedChars, _chars.length);
+      chars.length -= deletedChars;
     }
+    _chars = chars;
 
     // Free decoded characters if they aren't needed anymore.
     if (_rawBytes != null) _rawChars = null;
@@ -279,7 +286,7 @@ class HtmlInputStream {
       _offset += 1;
     }
 
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   String charsUntil1(int charCode, [bool opposite = false]) {
@@ -289,7 +296,7 @@ class HtmlInputStream {
       _offset += 1;
     }
 
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   String charsUntil2(int charCode1, int charCode2, [bool opposite = false]) {
@@ -300,7 +307,7 @@ class HtmlInputStream {
       _offset += 1;
     }
 
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   String charsUntil3(int charCode1, int charCode2, int charCode3,
@@ -312,7 +319,7 @@ class HtmlInputStream {
       _offset += 1;
     }
 
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   String charsUntilAsciiLetter([bool opposite = false]) {
@@ -324,7 +331,7 @@ class HtmlInputStream {
             opposite) {
       _offset += 1;
     }
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   static bool _isSpaceCharacter(int c) =>
@@ -341,7 +348,7 @@ class HtmlInputStream {
       _offset += 1;
     }
 
-    return String.fromCharCodes(_chars.sublist(start, _offset));
+    return String.fromCharCodes(_chars, start, _offset);
   }
 
   void unget(String? ch) {
