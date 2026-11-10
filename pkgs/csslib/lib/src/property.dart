@@ -1106,16 +1106,16 @@ class Font implements _StyleProperty {
   /// values are missing the default value is used.
   @override
   String get cssExpression {
-    // TODO(jimhug): include variant, style, other options
+    // Partial font properties need not specify a font family.
+    final families = _fontsAsString;
+    final familySuffix = families.isEmpty ? '' : ' $families';
     if (weight != null) {
-      // TODO(jacobr): is this really correct for lineHeight?
       if (lineHeight != null) {
-        return '$weight ${size}px/$lineHeightInPixels $_fontsAsString';
+        return '$weight ${size}px/$lineHeightInPixels$familySuffix';
       }
-      return '$weight ${size}px $_fontsAsString';
+      return '$weight ${size}px$familySuffix';
     }
-
-    return '${size}px $_fontsAsString';
+    return '${size}px$familySuffix';
   }
 
   Font scale(num ratio) {
@@ -1175,10 +1175,7 @@ class Font implements _StyleProperty {
   // TODO(terry): This is fragile should probably just iterate through the list
   //              of fonts construction the font-family string.
   /// Return fonts as a comma seperated list sans the square brackets.
-  String get _fontsAsString {
-    var fonts = family.toString();
-    return fonts.length > 2 ? fonts.substring(1, fonts.length - 1) : '';
-  }
+  String get _fontsAsString => family?.join(', ') ?? '';
 }
 
 /// This class stores the sizes of the box edges in the CSS [box model][]. Each
