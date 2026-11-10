@@ -148,7 +148,7 @@ class Color implements _StyleProperty, ColorBase {
       // Get alpha blending value 0..255
       var alpha = Color.hexToInt(_argb.substring(nextIndex, nextIndex + 2));
       // Convert to value from 0..1
-      a = double.parse((alpha / 255).toStringAsPrecision(2));
+      a = alpha / 255;
       nextIndex += 2;
     }
     var r = Color.hexToInt(_argb.substring(nextIndex, nextIndex + 2));
@@ -641,8 +641,8 @@ class Hsla implements _StyleProperty, ColorBase {
     var g = (value.toInt() & 0xff00) >> 8;
     var b = value.toInt() & 0xff;
 
-    // Convert alpha to 0..1 from (0..255).
-    a = double.parse((a / 255).toStringAsPrecision(2));
+    // Keep the full 8-bit alpha precision for lossless ARGB round-trips.
+    a /= 255;
 
     return _createFromRgba(r, g, b, a);
   }
