@@ -259,7 +259,7 @@ class TokenKind {
     },
     {'type': TokenKind.MARGIN_DIRECTIVE_LEFTTOP, 'value': 'left-top'},
     {'type': TokenKind.MARGIN_DIRECTIVE_LEFTMIDDLE, 'value': 'left-middle'},
-    {'type': TokenKind.MARGIN_DIRECTIVE_LEFTBOTTOM, 'value': 'right-bottom'},
+    {'type': TokenKind.MARGIN_DIRECTIVE_LEFTBOTTOM, 'value': 'left-bottom'},
     {'type': TokenKind.MARGIN_DIRECTIVE_RIGHTTOP, 'value': 'right-top'},
     {'type': TokenKind.MARGIN_DIRECTIVE_RIGHTMIDDLE, 'value': 'right-middle'},
     {'type': TokenKind.MARGIN_DIRECTIVE_RIGHTBOTTOM, 'value': 'right-bottom'},
@@ -549,15 +549,15 @@ class TokenKind {
     return '<BAD UNIT>'; // Not a unit token.
   }
 
-  /// Match color name, case insensitive match and return the associated color
-  /// entry from _EXTENDED_COLOR_NAMES list, return `null` if not found.
-  static Map<String, Object>? matchColorName(String text) {
-    var name = text.toLowerCase();
-    for (var color in _EXTENDED_COLOR_NAMES) {
-      if (color['name'] == name) return color;
-    }
-    return null;
-  }
+  // Keep the existing color entry objects for callers, but avoid scanning the
+  // entire CSS color-name table for every parsed identifier.
+  static final Map<String, Map<String, Object>> _colorNamesByName = {
+    for (final entry in _EXTENDED_COLOR_NAMES) entry['name'] as String: entry,
+  };
+
+  /// Match a CSS color keyword case-insensitively.
+  static Map<String, Object>? matchColorName(String text) =>
+      _colorNamesByName[text.toLowerCase()];
 
   /// Return RGB value as [int] from a color entry in _EXTENDED_COLOR_NAMES.
   static int colorValue(Map<String, Object> entry) => entry['value'] as int;
