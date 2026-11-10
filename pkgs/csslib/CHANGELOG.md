@@ -5,6 +5,8 @@
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
   two digits. `Rgba.fromString` and `Hsla.fromString` parse the CSS color once,
   and `Color.css` throws a `FormatException` for unsupported colors.
+- Correct CSS namespace URI serialization in pretty-printed stylesheets while
+  preserving compact `url()` representation.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
