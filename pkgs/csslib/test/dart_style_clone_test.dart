@@ -22,6 +22,33 @@ void main() {
     expect(style.font.family, ['different font', 'serif', 'fallback']);
   });
 
+  test('declaration clones own the style payload and keep priority', () {
+    final span = SourceFile.fromString('font-size').span(0, 9);
+    final families = <String>['Alef'];
+    final original = Declaration(
+      Identifier('font-family', span),
+      null,
+      FontExpression(span, family: families)..priority = 31,
+      span,
+      important: true,
+      ie7: true,
+    );
+    final copy = original.clone();
+    final originalStyle = original.dartStyle! as FontExpression;
+    final copiedStyle = copy.dartStyle! as FontExpression;
+
+    expect(copy.property, '*font-family');
+    expect(copy.important, isTrue);
+    expect(identical(copiedStyle, originalStyle), isFalse);
+    expect(copiedStyle.priority, 31);
+
+    copiedStyle.priority = 9;
+    copiedStyle.font.family!.add('serif');
+    expect(originalStyle.priority, 31);
+    expect(originalStyle.font.family, ['Alef']);
+    expect(families, ['Alef']);
+  });
+
   test('all Dart style subclasses retain priority when cloned', () {
     final span = SourceFile.fromString('margin').span(0, 6);
     final styles = <DartStyleExpression>[
