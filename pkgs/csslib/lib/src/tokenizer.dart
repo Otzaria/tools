@@ -27,7 +27,62 @@ class Tokenizer extends TokenizerBase {
 
   @override
   Token next({bool unicodeRange = false}) {
-    // keep track of our starting position
+    // Avoid recursively calling next() for each skipped whitespace/comment
+    // segment. Documents containing many adjacent comments previously grew
+    // the call stack in proportion to the number of comments.
+    if (_inString) {
+      var trailingWhitespaceStart = -1;
+      while (_index < _text.length) {
+        final ch = _text.codeUnitAt(_index);
+        if (ch == TokenChar.NEWLINE ||
+            ch == TokenChar.RETURN ||
+            ch == TokenChar.SPACE ||
+            ch == TokenChar.TAB) {
+          trailingWhitespaceStart = _index;
+          _index++;
+          while (_index < _text.length) {
+            final next = _text.codeUnitAt(_index);
+            if (next != TokenChar.NEWLINE &&
+                next != TokenChar.RETURN &&
+                next != TokenChar.SPACE &&
+                next != TokenChar.TAB) {
+              break;
+            }
+            _index++;
+          }
+          continue;
+        }
+
+        if (ch == TokenChar.SLASH &&
+            _index + 1 < _text.length &&
+            _text.codeUnitAt(_index + 1) == TokenChar.ASTERISK) {
+          final end = _text.indexOf('*/', _index + 2);
+          if (end < 0) break; // Preserve incomplete-comment errors.
+          _index = end + 2;
+        } else if (ch == TokenChar.LESS &&
+            _text.startsWith('<!--', _index)) {
+          final end = _text.indexOf('-->', _index + 4);
+          if (end < 0) break;
+          _index = end + 3;
+        } else if (ch == TokenChar.LESS &&
+            _text.startsWith('<![CDATA[', _index)) {
+          _index += 9;
+        } else if (ch == TokenChar.RBRACK &&
+            _text.startsWith(']]>', _index)) {
+          _index += 3;
+        } else {
+          break;
+        }
+        trailingWhitespaceStart = -1;
+      }
+      if (_index == _text.length && trailingWhitespaceStart >= 0) {
+        // Preserve the historical EOF span after trailing whitespace.
+        _startIndex = trailingWhitespaceStart;
+        return _finishToken(TokenKind.END_OF_FILE);
+      }
+    }
+
+    // Keep track of our starting position.
     _startIndex = _index;
 
     int ch;
