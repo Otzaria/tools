@@ -9,6 +9,8 @@
   the font size is unspecified.
 - Serialize partial font styles without bogus `ul` family names or trailing
   spaces, and join font family lists directly.
+- Serialize partial font styles without bogus family names or trailing
+  spaces; preserve explicit line heights without font weight.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
