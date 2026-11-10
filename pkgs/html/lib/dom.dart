@@ -967,9 +967,8 @@ class FilteredElementList extends IterableBase<Element>
 
   @override
   void forEach(void Function(Element) action) {
-    for (final node in _childNodes) {
-      if (node is Element) action(node);
-    }
+    // Preserve snapshot iteration when callbacks mutate the DOM.
+    _filtered.forEach(action);
   }
 
   @override
@@ -1011,7 +1010,7 @@ class FilteredElementList extends IterableBase<Element>
   }
 
   @override
-  Iterable<Element> get reversed => _childNodes.reversed.whereType<Element>();
+  Iterable<Element> get reversed => _filtered.reversed;
 
   @override
   void sort([int Function(Element, Element)? compare]) {
@@ -1052,16 +1051,13 @@ class FilteredElementList extends IterableBase<Element>
   }
 
   @override
-  Iterable<T> map<T>(T Function(Element) f) =>
-      _childNodes.whereType<Element>().map(f);
+  Iterable<T> map<T>(T Function(Element) f) => _filtered.map(f);
 
   @override
-  Iterable<Element> where(bool Function(Element) test) =>
-      _childNodes.whereType<Element>().where(test);
+  Iterable<Element> where(bool Function(Element) test) => _filtered.where(test);
 
   @override
-  Iterable<T> expand<T>(Iterable<T> Function(Element) f) =>
-      _childNodes.whereType<Element>().expand(f);
+  Iterable<T> expand<T>(Iterable<T> Function(Element) f) => _filtered.expand(f);
 
   @override
   void insert(int index, Element element) {
@@ -1165,7 +1161,7 @@ class FilteredElementList extends IterableBase<Element>
   }
 
   @override
-  Iterator<Element> get iterator => _childNodes.whereType<Element>().iterator;
+  Iterator<Element> get iterator => _filtered.iterator;
 
   @override
   List<Element> sublist(int start, [int? end]) => _filtered.sublist(start, end);
