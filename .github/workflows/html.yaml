@@ -18,6 +18,8 @@ on:
       - 'third_party/wpt-selectors/**'
   schedule:
     - cron: "0 0 * * 0"
+  # Allow manual verification when the fork's Actions queue is backlogged.
+  workflow_dispatch:
 
 defaults:
   run:
@@ -50,8 +52,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        sdk: [3.6, stable, dev]
+        include:
+          - { os: ubuntu-latest, sdk: '3.6' }
+          - { os: ubuntu-latest, sdk: stable }
+          - { os: ubuntu-latest, sdk: dev }
+          # Otzaria is a Windows desktop app; catch filesystem and Chrome
+          # differences in the HTML importer on Windows as well.
+          - { os: windows-latest, sdk: stable }
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
