@@ -29,8 +29,8 @@ void main() {
       family: ['Alef'],
     );
     expect(font.cssExpression, '16px/24 Alef');
-    expect(const Font(size: 16, lineHeight: LineHeight(24)).cssExpression,
-        '16px/24');
+    const withoutFamily = Font(size: 16, lineHeight: LineHeight(24));
+    expect(withoutFamily.cssExpression, '16px/24');
   });
 
   test('font CSS keeps weight and explicit line height', () {
