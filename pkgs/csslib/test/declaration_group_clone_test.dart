@@ -24,8 +24,8 @@ void main() {
     final errors = <Message>[];
     final sheet = parse('a { *zoom: 1 !important; }', errors: errors);
     expect(errors, isEmpty);
-    final decl = ((sheet.topLevels.single as RuleSet)
-        .declarationGroup.declarations.single as Declaration);
+    final rule = sheet.topLevels.single as RuleSet;
+    final decl = rule.declarationGroup.declarations.single as Declaration;
     final copy = decl.clone();
 
     expect(decl.property, '*zoom');
