@@ -607,6 +607,9 @@ class TokenKind {
   static String? hexToColorName(Object hexValue) =>
       _colorNamesByValue[hexValue];
 
+  /// Converts [number] to lowercase hexadecimal, zero-padded to [minDigits].
+  ///
+  /// A negative [number] keeps its sign in front; only the digits are padded.
   static String decimalToHex(int number, [int minDigits = 1]) {
     final hex = number.toRadixString(16);
     if (number < 0) {
