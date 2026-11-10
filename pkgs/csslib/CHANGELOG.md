@@ -1,5 +1,7 @@
 ## 1.0.3-wip
 
+- Fix ARGB/RGBA factory channel mapping, alpha preservation, and HSL-to-color
+  conversion, including grayscale and CSS string conversion.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
