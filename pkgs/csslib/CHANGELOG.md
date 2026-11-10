@@ -1,5 +1,6 @@
 ## 1.0.3-wip
 
+- Serialize partial font CSS values without bogus family names.
 - Deep-copy selector and pseudo-selector ASTs without shared mutable nodes.
 - Preserve group expression contents and declaration flags when cloning.
 - Retain Dart style priorities and independent font-family lists in clones.
