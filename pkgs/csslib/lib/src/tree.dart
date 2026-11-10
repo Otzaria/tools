@@ -103,7 +103,10 @@ class SelectorGroup extends TreeNode {
   SelectorGroup(this.selectors, SourceSpan? span) : super(span);
 
   @override
-  SelectorGroup clone() => SelectorGroup(selectors, span);
+  SelectorGroup clone() {
+    final cloned = selectors.map((selector) => selector.clone()).toList();
+    return SelectorGroup(cloned, span);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitSelectorGroup(this);
@@ -155,8 +158,10 @@ class SimpleSelectorSequence extends TreeNode {
       };
 
   @override
-  SimpleSelectorSequence clone() =>
-      SimpleSelectorSequence(simpleSelector, span, combinator);
+  SimpleSelectorSequence clone() {
+    final selector = simpleSelector.clone() as SimpleSelector;
+    return SimpleSelectorSequence(selector, span, combinator);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) =>
@@ -192,7 +197,8 @@ class ElementSelector extends SimpleSelector {
   dynamic visit(VisitorBase visitor) => visitor.visitElementSelector(this);
 
   @override
-  ElementSelector clone() => ElementSelector(_name, span);
+  ElementSelector clone() => ElementSelector(
+      _name is TreeNode ? (_name as TreeNode).clone() : _name, span);
 
   @override
   String toString() => name;
@@ -218,7 +224,7 @@ class NamespaceSelector extends SimpleSelector {
 
   @override
   NamespaceSelector clone() => NamespaceSelector(
-      _namespace,
+      _namespace is TreeNode ? (_namespace as TreeNode).clone() : _namespace,
       nameAsSimpleSelector?.clone() ??
           ElementSelector(Identifier('', span), span),
       span);
@@ -275,8 +281,11 @@ class AttributeSelector extends SimpleSelector {
   }
 
   @override
-  AttributeSelector clone() =>
-      AttributeSelector(_name as Identifier, _op, value, span);
+  AttributeSelector clone() {
+    final copiedName = (_name as Identifier).clone();
+    final copiedValue = value is TreeNode ? (value as TreeNode).clone() : value;
+    return AttributeSelector(copiedName, _op, copiedValue, span);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitAttributeSelector(this);
@@ -289,7 +298,7 @@ class AttributeSelector extends SimpleSelector {
 class IdSelector extends SimpleSelector {
   IdSelector(Identifier super.name, super.span);
   @override
-  IdSelector clone() => IdSelector(_name as Identifier, span);
+  IdSelector clone() => IdSelector((_name as Identifier).clone(), span);
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitIdSelector(this);
 
@@ -301,7 +310,7 @@ class IdSelector extends SimpleSelector {
 class ClassSelector extends SimpleSelector {
   ClassSelector(Identifier super.name, super.span);
   @override
-  ClassSelector clone() => ClassSelector(_name as Identifier, span);
+  ClassSelector clone() => ClassSelector((_name as Identifier).clone(), span);
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitClassSelector(this);
 
@@ -316,7 +325,8 @@ class PseudoClassSelector extends SimpleSelector {
   dynamic visit(VisitorBase visitor) => visitor.visitPseudoClassSelector(this);
 
   @override
-  PseudoClassSelector clone() => PseudoClassSelector(_name as Identifier, span);
+  PseudoClassSelector clone() =>
+      PseudoClassSelector((_name as Identifier).clone(), span);
 
   @override
   String toString() => ':$name';
@@ -334,8 +344,10 @@ class PseudoElementSelector extends SimpleSelector {
       visitor.visitPseudoElementSelector(this);
 
   @override
-  PseudoElementSelector clone() =>
-      PseudoElementSelector(_name as Identifier, span);
+  PseudoElementSelector clone() {
+    final name = (_name as Identifier).clone();
+    return PseudoElementSelector(name, span, isLegacy: isLegacy);
+  }
 
   @override
   String toString() => "${isLegacy ? ':' : '::'}$name";
@@ -349,8 +361,8 @@ class PseudoClassFunctionSelector extends PseudoClassSelector {
       : super(name, span);
 
   @override
-  PseudoClassFunctionSelector clone() =>
-      PseudoClassFunctionSelector(_name as Identifier, argument, span);
+  PseudoClassFunctionSelector clone() => PseudoClassFunctionSelector(
+      (_name as Identifier).clone(), argument.clone(), span);
 
   Selector get selector => argument as Selector;
   SelectorExpression get expression => argument as SelectorExpression;
@@ -369,8 +381,8 @@ class PseudoElementFunctionSelector extends PseudoElementSelector {
       : super(name, span);
 
   @override
-  PseudoElementFunctionSelector clone() =>
-      PseudoElementFunctionSelector(_name as Identifier, expression, span);
+  PseudoElementFunctionSelector clone() => PseudoElementFunctionSelector(
+      (_name as Identifier).clone(), expression.clone(), span);
 
   @override
   dynamic visit(VisitorBase visitor) =>
@@ -401,7 +413,8 @@ class NegationSelector extends SimpleSelector {
       : super(Negation(span), span);
 
   @override
-  NegationSelector clone() => NegationSelector(negationArg, span);
+  NegationSelector clone() =>
+      NegationSelector(negationArg?.clone() as SimpleSelector?, span);
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitNegationSelector(this);
@@ -1042,7 +1055,7 @@ class Declaration extends TreeNode {
   @override
   Declaration clone() =>
       Declaration(_property?.clone(), expression?.clone(), dartStyle, span,
-          important: important);
+          important: important, ie7: isIE7);
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitDeclaration(this);
@@ -1064,7 +1077,8 @@ class VarDefinition extends Declaration {
 
   @override
   VarDefinition clone() =>
-      VarDefinition(_property?.clone(), expression?.clone(), span);
+      VarDefinition(_property?.clone(), expression?.clone(), span)
+        ..badUsage = badUsage;
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitVarDefinition(this);
@@ -1460,7 +1474,14 @@ class GroupTerm extends Expression {
   }
 
   @override
-  GroupTerm clone() => GroupTerm(span);
+  GroupTerm clone() {
+    final copy = GroupTerm(span);
+    for (final term in _terms) {
+      copy.add(term.clone());
+    }
+    return copy;
+  }
+
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitGroupTerm(this);
 }
@@ -1597,13 +1618,18 @@ class FontExpression extends DartStyleExpression {
         super(DartStyleExpression.fontStyle, span);
 
   @override
-  FontExpression clone() => FontExpression(span,
+  FontExpression clone() {
+    final result = FontExpression(
+      span,
       size: font.size,
-      family: font.family,
+      family: font.family?.toList(),
       weight: font.weight,
       style: font.style,
       variant: font.variant,
-      lineHeight: font.lineHeight);
+      lineHeight: font.lineHeight,
+    );
+    return result..priority = priority;
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitFontExpression(this);
@@ -1661,8 +1687,17 @@ class MarginExpression extends BoxExpression {
       : super(x._styleType, span, BoxEdge.merge(x.box, y.box));
 
   @override
-  MarginExpression clone() => MarginExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+  MarginExpression clone() {
+    final edge = box!;
+    final result = MarginExpression(
+      span,
+      top: edge.top,
+      right: edge.right,
+      bottom: edge.bottom,
+      left: edge.left,
+    );
+    return result..priority = priority;
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitMarginExpression(this);
@@ -1697,8 +1732,17 @@ class BorderExpression extends BoxExpression {
             DartStyleExpression.borderStyle, span, BoxEdge.merge(x.box, y.box));
 
   @override
-  BorderExpression clone() => BorderExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+  BorderExpression clone() {
+    final edge = box!;
+    final result = BorderExpression(
+      span,
+      top: edge.top,
+      right: edge.right,
+      bottom: edge.bottom,
+      left: edge.left,
+    );
+    return result..priority = priority;
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitBorderExpression(this);
@@ -1720,7 +1764,11 @@ class HeightExpression extends DartStyleExpression {
   }
 
   @override
-  HeightExpression clone() => HeightExpression(span, height);
+  HeightExpression clone() {
+    final result = HeightExpression(span, height);
+    return result..priority = priority;
+  }
+
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitHeightExpression(this);
 }
@@ -1741,7 +1789,10 @@ class WidthExpression extends DartStyleExpression {
   }
 
   @override
-  WidthExpression clone() => WidthExpression(span, width);
+  WidthExpression clone() {
+    final result = WidthExpression(span, width);
+    return result..priority = priority;
+  }
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitWidthExpression(this);
 }
@@ -1777,8 +1828,17 @@ class PaddingExpression extends BoxExpression {
             BoxEdge.merge(x.box, y.box));
 
   @override
-  PaddingExpression clone() => PaddingExpression(span,
-      top: box!.top, right: box!.right, bottom: box!.bottom, left: box!.left);
+  PaddingExpression clone() {
+    final edge = box!;
+    final result = PaddingExpression(
+      span,
+      top: edge.top,
+      right: edge.right,
+      bottom: edge.bottom,
+      left: edge.left,
+    );
+    return result..priority = priority;
+  }
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitPaddingExpression(this);
 }

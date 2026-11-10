@@ -1,5 +1,10 @@
 ## 1.0.3-wip
 
+- Deep-copy selector and pseudo-selector ASTs without shared mutable nodes.
+- Preserve group expression contents and declaration flags when cloning.
+- Retain Dart style priorities and independent font-family lists in clones.
+- Preserve absolute and relative line heights in scaled Font objects.
+- Fix Font.hashCode for partial font styles and prevent hash collisions.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
