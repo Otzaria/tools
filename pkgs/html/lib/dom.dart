@@ -185,7 +185,8 @@ abstract mixin class _ElementAndDocument implements _ParentNode {
     if (wanted.isEmpty) return <Element>[];
     return [
       for (final element in _descendantElements(this))
-        if (wanted.every((token) => _hasHtmlClassToken(element.className, token)))
+        if (wanted
+            .every((token) => _hasHtmlClassToken(element.className, token)))
           element,
     ];
   }
