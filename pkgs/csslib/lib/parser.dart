@@ -1344,6 +1344,14 @@ class _Parser {
     var start = _peekToken.span;
 
     tokenizer.inSelector = true;
+    // The lookahead was lexed before selector mode was set, so a unit-like
+    // type selector such as "rem" may have been classified as a unit.
+    final peek = _peekToken;
+    if (peek is IdentifierToken &&
+        peek.kind != TokenKind.IDENTIFIER &&
+        peek.kind != TokenKind.IMPORTANT) {
+      _peekToken = IdentifierToken(peek.text, TokenKind.IDENTIFIER, peek.span);
+    }
     do {
       var selector = processSelector();
       if (selector != null) {

@@ -16,8 +16,8 @@
   accepts percentages for saturation, lightness, RGB channels and alpha.
   Functional colors with the wrong number of components or non-finite values
   now throw a `FormatException`.
-- Correctly tokenize unit-like selector names (`px`, `fr`, `rem`, etc.) at
-  the start of selector input and selector groups.
+- Correctly parse unit-like type selectors (`rem`, `vw`, `dpi`, etc.) at the
+  start of `selector()` and `parseSelectorGroup()` input and of style rules.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,
