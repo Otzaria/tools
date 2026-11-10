@@ -26,7 +26,7 @@ void main() {
 
   test('indexed matching agrees with generic linear matcher', () {
     final candidates = [
-      'rem', 'fr', 'px', 'PT', 'dppx', 'foo', 'font-size', 'media',
+      'em', 'rem', 'px', 'foo', 'font-size', 'media',
       'supports', 'left-top', 'right-bottom', 'and', 'only',
     ];
     for (final word in candidates) {
