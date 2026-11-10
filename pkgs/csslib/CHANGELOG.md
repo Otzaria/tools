@@ -1,5 +1,7 @@
 ## 1.0.3-wip
 
+- Correct `Font.hashCode` for partial/empty font styles and distribute hashes
+  across font families and other properties, avoiding hash-table collisions.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
