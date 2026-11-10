@@ -2,9 +2,7 @@ name: csslib verification
 
 on:
   push:
-    branches:
-      - main
-      - palmoni5/csslib-ci-hard-fail-20261110
+    branches: [main]
     paths:
       - 'pkgs/csslib/**'
       - '.github/workflows/csslib_verification.yaml'
