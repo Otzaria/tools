@@ -103,7 +103,8 @@ class SelectorGroup extends TreeNode {
   SelectorGroup(this.selectors, SourceSpan? span) : super(span);
 
   @override
-  SelectorGroup clone() => SelectorGroup(selectors, span);
+  SelectorGroup clone() =>
+      SelectorGroup(selectors.map((selector) => selector.clone()).toList(), span);
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitSelectorGroup(this);
@@ -156,7 +157,7 @@ class SimpleSelectorSequence extends TreeNode {
 
   @override
   SimpleSelectorSequence clone() =>
-      SimpleSelectorSequence(simpleSelector, span, combinator);
+      SimpleSelectorSequence(simpleSelector.clone() as SimpleSelector, span, combinator);
 
   @override
   dynamic visit(VisitorBase visitor) =>
@@ -192,7 +193,8 @@ class ElementSelector extends SimpleSelector {
   dynamic visit(VisitorBase visitor) => visitor.visitElementSelector(this);
 
   @override
-  ElementSelector clone() => ElementSelector(_name, span);
+  ElementSelector clone() => ElementSelector(
+      _name is TreeNode ? (_name as TreeNode).clone() : _name, span);
 
   @override
   String toString() => name;
@@ -218,7 +220,7 @@ class NamespaceSelector extends SimpleSelector {
 
   @override
   NamespaceSelector clone() => NamespaceSelector(
-      _namespace,
+      _namespace is TreeNode ? (_namespace as TreeNode).clone() : _namespace,
       nameAsSimpleSelector?.clone() ??
           ElementSelector(Identifier('', span), span),
       span);
@@ -276,7 +278,8 @@ class AttributeSelector extends SimpleSelector {
 
   @override
   AttributeSelector clone() =>
-      AttributeSelector(_name as Identifier, _op, value, span);
+      AttributeSelector((_name as Identifier).clone(), _op,
+          value is TreeNode ? (value as TreeNode).clone() : value, span);
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitAttributeSelector(this);
@@ -289,7 +292,7 @@ class AttributeSelector extends SimpleSelector {
 class IdSelector extends SimpleSelector {
   IdSelector(Identifier super.name, super.span);
   @override
-  IdSelector clone() => IdSelector(_name as Identifier, span);
+  IdSelector clone() => IdSelector((_name as Identifier).clone(), span);
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitIdSelector(this);
 
@@ -301,7 +304,7 @@ class IdSelector extends SimpleSelector {
 class ClassSelector extends SimpleSelector {
   ClassSelector(Identifier super.name, super.span);
   @override
-  ClassSelector clone() => ClassSelector(_name as Identifier, span);
+  ClassSelector clone() => ClassSelector((_name as Identifier).clone(), span);
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitClassSelector(this);
 
@@ -316,7 +319,8 @@ class PseudoClassSelector extends SimpleSelector {
   dynamic visit(VisitorBase visitor) => visitor.visitPseudoClassSelector(this);
 
   @override
-  PseudoClassSelector clone() => PseudoClassSelector(_name as Identifier, span);
+  PseudoClassSelector clone() =>
+      PseudoClassSelector((_name as Identifier).clone(), span);
 
   @override
   String toString() => ':$name';
@@ -334,8 +338,8 @@ class PseudoElementSelector extends SimpleSelector {
       visitor.visitPseudoElementSelector(this);
 
   @override
-  PseudoElementSelector clone() =>
-      PseudoElementSelector(_name as Identifier, span);
+  PseudoElementSelector clone() => PseudoElementSelector(
+      (_name as Identifier).clone(), span, isLegacy: isLegacy);
 
   @override
   String toString() => "${isLegacy ? ':' : '::'}$name";
@@ -349,8 +353,8 @@ class PseudoClassFunctionSelector extends PseudoClassSelector {
       : super(name, span);
 
   @override
-  PseudoClassFunctionSelector clone() =>
-      PseudoClassFunctionSelector(_name as Identifier, argument, span);
+  PseudoClassFunctionSelector clone() => PseudoClassFunctionSelector(
+      (_name as Identifier).clone(), argument.clone(), span);
 
   Selector get selector => argument as Selector;
   SelectorExpression get expression => argument as SelectorExpression;
@@ -369,8 +373,8 @@ class PseudoElementFunctionSelector extends PseudoElementSelector {
       : super(name, span);
 
   @override
-  PseudoElementFunctionSelector clone() =>
-      PseudoElementFunctionSelector(_name as Identifier, expression, span);
+  PseudoElementFunctionSelector clone() => PseudoElementFunctionSelector(
+      (_name as Identifier).clone(), expression.clone(), span);
 
   @override
   dynamic visit(VisitorBase visitor) =>
@@ -401,7 +405,8 @@ class NegationSelector extends SimpleSelector {
       : super(Negation(span), span);
 
   @override
-  NegationSelector clone() => NegationSelector(negationArg, span);
+  NegationSelector clone() =>
+      NegationSelector(negationArg?.clone() as SimpleSelector?, span);
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitNegationSelector(this);
