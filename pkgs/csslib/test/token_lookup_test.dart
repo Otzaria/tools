@@ -10,7 +10,10 @@ import 'testing.dart';
 void main() {
   test('named color lookup remains case insensitive', () {
     expect(TokenKind.colorValue(TokenKind.matchColorName('RED')!), 0xFF0000);
-    expect(TokenKind.colorValue(TokenKind.matchColorName('aliceblue')!), 0xF0F8FF);
+    expect(
+      TokenKind.colorValue(TokenKind.matchColorName('aliceblue')!),
+      0xF0F8FF,
+    );
     expect(TokenKind.matchColorName('not-a-color'), isNull);
   });
 
