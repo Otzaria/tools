@@ -21,6 +21,8 @@
   usage state when cloning CSS expression/declaration nodes.
 - Preserve Dart style priorities when cloning and detach mutable font-family
   lists from cloned font expressions.
+- Deep-clone declaration style payloads and preserve Dart style priorities;
+  detach mutable font-family lists in cloned font expressions.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
