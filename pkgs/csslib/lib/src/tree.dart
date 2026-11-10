@@ -283,8 +283,7 @@ class AttributeSelector extends SimpleSelector {
   @override
   AttributeSelector clone() {
     final copiedName = (_name as Identifier).clone();
-    final copiedValue =
-        value is TreeNode ? (value as TreeNode).clone() : value;
+    final copiedValue = value is TreeNode ? (value as TreeNode).clone() : value;
     return AttributeSelector(copiedName, _op, copiedValue, span);
   }
 
