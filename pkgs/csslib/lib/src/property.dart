@@ -1109,13 +1109,9 @@ class Font implements _StyleProperty {
     // Partial font properties need not specify a font family.
     final families = _fontsAsString;
     final familySuffix = families.isEmpty ? '' : ' $families';
-    if (weight != null) {
-      if (lineHeight != null) {
-        return '$weight ${size}px/$lineHeightInPixels$familySuffix';
-      }
-      return '$weight ${size}px$familySuffix';
-    }
-    return '${size}px$familySuffix';
+    final weightPrefix = weight == null ? '' : '$weight ';
+    final heightSuffix = lineHeight == null ? '' : '/$lineHeightInPixels';
+    return '$weightPrefix${size}px$heightSuffix$familySuffix';
   }
 
   Font scale(num ratio) {
