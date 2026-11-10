@@ -41,8 +41,11 @@ jobs:
           sdk: ${{ matrix.sdk }}
       - name: Resolve dependencies
         run: dart pub get
-      - name: Dart formatter
-        run: dart format --output=none --set-exit-if-changed .
+      - name: Dart formatter (show changes for QA)
+        shell: bash
+        run: |
+          dart format .
+          git diff --exit-code -- .
       - name: Static analysis
         run: dart analyze --fatal-infos
       - name: VM regression suite
