@@ -7,6 +7,8 @@
 - `Font.scale` keeps the line height (scaling pixel heights and keeping
   relative ratios), copies the font-family list, and no longer throws when
   the font size is unspecified.
+- Serialize partial font styles without bogus `ul` family names or trailing
+  spaces, and join font family lists directly.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
