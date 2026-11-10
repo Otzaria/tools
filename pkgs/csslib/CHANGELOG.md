@@ -14,6 +14,9 @@
 - Serialize partial font styles without bogus family names, `nullpx` sizes or
   trailing spaces; preserve explicit line heights without font weight and
   keep the `px` unit on pixel line heights (a unitless value is a multiplier).
+- Deep-clone selector groups, selector sequences, identifiers, functional
+  pseudo-selector arguments, and legacy pseudo-element flags instead of
+  sharing mutable AST nodes between the original and its clone.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
