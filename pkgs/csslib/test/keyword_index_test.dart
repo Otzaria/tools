@@ -9,10 +9,8 @@ void main() {
   test('indexed CSS keywords remain ASCII case-insensitive', () {
     expect(TokenKind.matchUnits('PX', 0, 2), TokenKind.UNIT_LENGTH_PX);
     expect(TokenKind.matchUnits('10ReM', 2, 3), TokenKind.UNIT_REM);
-    expect(TokenKind.matchDirectives('MEDiA', 0, 5),
-        TokenKind.DIRECTIVE_MEDIA);
-    expect(TokenKind.matchMediaOperator('AND', 0, 3),
-        TokenKind.MEDIA_OP_AND);
+    expect(TokenKind.matchDirectives('MEDiA', 0, 5), TokenKind.DIRECTIVE_MEDIA);
+    expect(TokenKind.matchMediaOperator('AND', 0, 3), TokenKind.MEDIA_OP_AND);
   });
 
   test('offsets and unknown keywords are unchanged', () {
@@ -26,8 +24,17 @@ void main() {
 
   test('indexed matching agrees with generic linear matcher', () {
     final candidates = [
-      'em', 'rem', 'px', 'foo', 'font-size', 'media',
-      'supports', 'left-top', 'right-bottom', 'and', 'only',
+      'em',
+      'rem',
+      'px',
+      'foo',
+      'font-size',
+      'media',
+      'supports',
+      'left-top',
+      'right-bottom',
+      'and',
+      'only',
     ];
     for (final word in candidates) {
       expect(

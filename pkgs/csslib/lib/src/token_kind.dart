@@ -531,8 +531,8 @@ class TokenKind {
     int offset,
     int length,
   ) =>
-      matchList(groups[length] ?? const <Map<String, Object>>[], field,
-          text, offset, length);
+      matchList(groups[length] ?? const <Map<String, Object>>[], field, text,
+          offset, length);
 
   /// Return the token that matches the unit ident found.
   static int matchUnits(String text, int offset, int length) =>

@@ -59,16 +59,14 @@ class Tokenizer extends TokenizerBase {
           final end = _text.indexOf('*/', _index + 2);
           if (end < 0) break; // Preserve incomplete-comment errors.
           _index = end + 2;
-        } else if (ch == TokenChar.LESS &&
-            _text.startsWith('<!--', _index)) {
+        } else if (ch == TokenChar.LESS && _text.startsWith('<!--', _index)) {
           final end = _text.indexOf('-->', _index + 4);
           if (end < 0) break;
           _index = end + 3;
         } else if (ch == TokenChar.LESS &&
             _text.startsWith('<![CDATA[', _index)) {
           _index += 9;
-        } else if (ch == TokenChar.RBRACK &&
-            _text.startsWith(']]>', _index)) {
+        } else if (ch == TokenChar.RBRACK && _text.startsWith(']]>', _index)) {
           _index += 3;
         } else {
           break;

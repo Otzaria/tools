@@ -302,8 +302,7 @@ class Color implements _StyleProperty, ColorBase {
         } else if (trimmed.endsWith('grad')) {
           degrees = parseNumber(trimmed.substring(0, trimmed.length - 4)) * 0.9;
         } else if (trimmed.endsWith('rad')) {
-          degrees =
-              parseNumber(trimmed.substring(0, trimmed.length - 3)) *
+          degrees = parseNumber(trimmed.substring(0, trimmed.length - 3)) *
               180 /
               math.pi;
         } else if (trimmed.endsWith('deg')) {
@@ -662,10 +661,7 @@ class Rgba implements _StyleProperty, ColorBase {
 
   @override
   int get argbValue =>
-      ((a == null ? 0 : (a! * 255).round()) << 24) |
-      (r << 16) |
-      (g << 8) |
-      b;
+      ((a == null ? 0 : (a! * 255).round()) << 24) | (r << 16) | (g << 8) | b;
 
   Color get color => Color.createRgba(r, g, b, a);
   Hsla get hsla => Hsla.fromRgba(this);
