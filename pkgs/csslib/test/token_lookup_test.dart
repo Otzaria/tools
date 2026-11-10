@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:csslib/parser.dart';
+import 'package:csslib/visitor.dart';
 import 'package:test/test.dart';
 
 import 'testing.dart';
