@@ -1285,6 +1285,9 @@ bool _isElementBr(Element element) {
 // Avoid a recursive TreeVisitor and its child-list snapshots at every level:
 // extracting text from deeply nested HTML must not overflow the call stack.
 String _getText(Node node, {bool convertBRsToNewlines = false}) {
+  if (convertBRsToNewlines && node is Element && _isElementBr(node)) {
+    return '\n';
+  }
   final result = StringBuffer();
   final stack = <Iterator<Node>>[node.nodes.iterator];
   while (stack.isNotEmpty) {

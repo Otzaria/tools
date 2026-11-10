@@ -35,6 +35,15 @@ void main() {
     );
   });
 
+  test('BR element itself converts to a newline', () {
+    final br = Element.tag('br');
+    expect(br.text, '');
+    expect(br.textContent(convertBRsToNewlines: true), '\n');
+    final svgBr =
+        Document().createElementNS('http://www.w3.org/2000/svg', 'br');
+    expect(svgBr.textContent(convertBRsToNewlines: true), '');
+  });
+
   test('comments and doctype are not included in concatenated text', () {
     final fragment = DocumentFragment()
       ..append(Comment('skip'))
