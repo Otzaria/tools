@@ -1,0 +1,2 @@
+# Check out test data byte-for-byte (some html5lib files contain raw CR).
+* -text
