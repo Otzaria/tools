@@ -28,8 +28,8 @@ void main() {
   });
 
   test('color string factories decode CSS colors only once', () {
-    expect(Rgba.fromString('#ff000080').toHexArgbString(), '80ff0000');
-    expect(Hsla.fromString('#ff000080').color.toHexArgbString(), '80ff0000');
+    expect(Rgba.fromString('rgba(255,0,0,0.5)').toHexArgbString(), '80ff0000');
+    expect(Hsla.fromString('rgba(255,0,0,0.5)').color.toHexArgbString(), '80ff0000');
     expect(Rgba.fromString('rgb(255,0,0)').r, 255);
   });
 
