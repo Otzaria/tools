@@ -33,7 +33,10 @@ void main() {
     final attributeName = Identifier('title', null);
     final attributeValue = Identifier('hello', null);
     final attribute = AttributeSelector(
-      attributeName, TokenKind.EQUALS, attributeValue, null,
+      attributeName,
+      TokenKind.EQUALS,
+      attributeValue,
+      null,
     ).clone();
     attributeName.name = 'other';
     attributeValue.name = 'world';
@@ -43,7 +46,9 @@ void main() {
     final namespaceName = Identifier('svg', null);
     final elementName = Identifier('rect', null);
     final namespace = NamespaceSelector(
-      namespaceName, ElementSelector(elementName, null), null,
+      namespaceName,
+      ElementSelector(elementName, null),
+      null,
     ).clone();
     namespaceName.name = 'other';
     elementName.name = 'circle';
@@ -69,15 +74,15 @@ void main() {
         PseudoClassFunctionSelector(Identifier('host', null), nested, null);
     final copy = original.clone();
     innerName.name = 'changed';
-    expect(
-      (copy.argument as Selector).simpleSelectorSequences.single
-          .simpleSelector.name,
-      'item',
-    );
+    final clonedArgument = copy.argument as Selector;
+    final firstSequence = clonedArgument.simpleSelectorSequences.single;
+    expect(firstSequence.simpleSelector.name, 'item');
 
     final expr = SelectorExpression([NumberTerm(2, '2', null)], null);
     final pseudo = PseudoElementFunctionSelector(
-      Identifier('part', null), expr, null,
+      Identifier('part', null),
+      expr,
+      null,
     ).clone();
     expr.expressions.clear();
     expect(pseudo.expression.expressions, hasLength(1));

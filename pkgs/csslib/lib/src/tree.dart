@@ -103,8 +103,10 @@ class SelectorGroup extends TreeNode {
   SelectorGroup(this.selectors, SourceSpan? span) : super(span);
 
   @override
-  SelectorGroup clone() =>
-      SelectorGroup(selectors.map((selector) => selector.clone()).toList(), span);
+  SelectorGroup clone() {
+    final cloned = selectors.map((selector) => selector.clone()).toList();
+    return SelectorGroup(cloned, span);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) => visitor.visitSelectorGroup(this);
@@ -156,8 +158,10 @@ class SimpleSelectorSequence extends TreeNode {
       };
 
   @override
-  SimpleSelectorSequence clone() =>
-      SimpleSelectorSequence(simpleSelector.clone() as SimpleSelector, span, combinator);
+  SimpleSelectorSequence clone() {
+    final selector = simpleSelector.clone() as SimpleSelector;
+    return SimpleSelectorSequence(selector, span, combinator);
+  }
 
   @override
   dynamic visit(VisitorBase visitor) =>
