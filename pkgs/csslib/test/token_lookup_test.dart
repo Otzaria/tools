@@ -18,6 +18,13 @@ void main() {
     expect(TokenKind.matchColorName('not-a-color'), isNull);
   });
 
+  test('reverse color lookups preserve first canonical aliases', () {
+    expect(TokenKind.hexToColorName(0x00FFFF), 'aqua');
+    expect(TokenKind.hexToColorName(0xFF00FF), 'fuchsia');
+    expect(TokenKind.hexToColorName(0xF0F8FF), 'aliceblue');
+    expect(TokenKind.hexToColorName(0x010203), isNull);
+  });
+
   test('left and right bottom page-margin names are distinct', () {
     const left = 'left-bottom';
     const right = 'right-bottom';
