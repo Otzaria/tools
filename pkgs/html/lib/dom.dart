@@ -127,6 +127,23 @@ Iterable<Element> _descendantElements(Node root) sync* {
 
 final RegExp _htmlClassWhitespace = RegExp(r'[ \t\n\f\r]+');
 
+bool _hasHtmlClassToken(String source, String token) {
+  var start = 0;
+  for (var i = 0; i <= source.length; i++) {
+    final separator = i == source.length ||
+        switch (source.codeUnitAt(i)) {
+          0x09 || 0x0A || 0x0C || 0x0D || 0x20 => true,
+          _ => false,
+        };
+    if (!separator) continue;
+    if (i - start == token.length && source.startsWith(token, start)) {
+      return true;
+    }
+    start = i + 1;
+  }
+  return false;
+}
+
 // http://dom.spec.whatwg.org/#interface-nonelementparentnode
 mixin _NonElementParentNode implements _ParentNode {
   /// Return the first descendant whose ID exactly matches [id].
@@ -164,7 +181,8 @@ abstract mixin class _ElementAndDocument implements _ParentNode {
     if (wanted.isEmpty) return <Element>[];
     return [
       for (final element in _descendantElements(this))
-        if (wanted.every(element.classes.contains)) element,
+        if (wanted.every((token) => _hasHtmlClassToken(element.className, token)))
+          element,
     ];
   }
 }
