@@ -13,6 +13,8 @@
 - Fix `Node.remove` and `NodeList.remove` leaving a stale `parentNode`, `Node.insertBefore`, `NodeList.insert`, `insertAll` and `operator []=` using a shifted index when moving an earlier sibling, and `reparentChildren` emptying a node reparented to itself. Moving all children of another node (`append` of a `DocumentFragment`, `reparentChildren`, `innerHtml`) now runs in linear time.
 - `getElementById`, `getElementsByTagName` and `getElementsByClassName` no longer parse a CSS selector. IDs and class names that are not valid CSS identifiers (such as `a:b`, `a.b` or `1`) now match exactly instead of throwing or matching the wrong element, `getElementById('')` returns `null`, class names are split on HTML ASCII whitespace, and deeply nested documents no longer overflow the stack.
 - Reduce allocations when decoding numeric and named character references and when sniffing `<meta charset>` declarations.
+- Fix `querySelector` and `querySelectorAll` matching of `:root` (now the element whose parent is the `Document`), `:empty` and `:blank` (previously inverted), and numeric `:nth-child(n)` (now counts element siblings from 1), and traverse descendants iteratively so deeply nested documents no longer overflow the stack.
+- Class selectors, `[attr~=value]` selectors and `Element.classes` now split their values on ASCII whitespace (space, tab, LF, FF, CR) as the HTML standard requires, and class selectors no longer allocate a class set per candidate element.
 
 ## 0.15.7
 

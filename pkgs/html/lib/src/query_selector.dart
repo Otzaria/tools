@@ -171,7 +171,8 @@ class SelectorEvaluator extends Visitor {
 
       // http://dev.w3.org/csswg/selectors-4/#the-blank-pseudo
       case 'blank':
-        return !_element!.nodes.any((n) => n is Element ||
+        return !_element!.nodes.any((n) =>
+            n is Element ||
             n is Text && n.data.runes.any((r) => !isWhitespaceCC(r)));
 
       // http://dev.w3.org/csswg/selectors-4/#the-first-child-pseudo
@@ -332,8 +333,7 @@ class SelectorEvaluator extends Visitor {
     final select = '${node.value}';
     return switch (node.operatorKind) {
       TokenKind.EQUALS => value == select,
-      TokenKind.INCLUDES =>
-        value.split(' ').any((v) => v.isNotEmpty && v == select),
+      TokenKind.INCLUDES => hasHtmlClassToken(value, select),
       TokenKind.DASH_MATCH => value.startsWith(select) &&
           (value.length == select.length || value[select.length] == '-'),
       TokenKind.PREFIX_MATCH => value.startsWith(select),
