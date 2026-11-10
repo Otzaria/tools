@@ -319,7 +319,7 @@ class Color implements _StyleProperty, ColorBase {
           degrees = parseNumber(trimmed);
         }
         // CSS hue is an angle, not the 0..1 fraction expected by Hsla.
-        return (degrees % 360) / 360;
+        return ((degrees % 360) + 360) % 360 / 360;
       }
 
       switch (type) {
