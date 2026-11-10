@@ -15,6 +15,7 @@
 - Reduce allocations when decoding numeric and named character references and when sniffing `<meta charset>` declarations.
 - Fix `querySelector` and `querySelectorAll` matching of `:root` (now the element whose parent is the `Document`), `:empty` and `:blank` (previously inverted), and numeric `:nth-child(n)` (now counts element siblings from 1), and traverse descendants iteratively so deeply nested documents no longer overflow the stack.
 - Class selectors, `[attr~=value]` selectors and `Element.classes` now split their values on ASCII whitespace (space, tab, LF, FF, CR) as the HTML standard requires, and class selectors no longer allocate a class set per candidate element.
+- Fix `Element.text`, `DocumentFragment.text` and `Node.textContent` throwing a `StackOverflowError` on very deeply nested elements; text is now extracted iteratively.
 
 ## 0.15.7
 
