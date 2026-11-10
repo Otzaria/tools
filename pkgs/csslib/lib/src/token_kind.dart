@@ -421,6 +421,7 @@ class TokenKind {
     {'name': 'plum', 'value': 0xDDA0DD},
     {'name': 'powderblue', 'value': 0xB0E0E6},
     {'name': 'purple', 'value': 0x800080},
+    {'name': 'rebeccapurple', 'value': 0x663399},
     {'name': 'red', 'value': 0xFF0000},
     {'name': 'rosybrown', 'value': 0xBC8F8F},
     {'name': 'royalblue', 'value': 0x4169E1},
@@ -607,29 +608,15 @@ class TokenKind {
       _colorNamesByValue[hexValue];
 
   static String decimalToHex(int number, [int minDigits = 1]) {
-    final hexDigits = '0123456789abcdef';
-
-    var result = <String>[];
-
-    var dividend = number >> 4;
-    var remain = number % 16;
-    result.add(hexDigits[remain]);
-    while (dividend != 0) {
-      remain = dividend % 16;
-      dividend >>= 4;
-      result.add(hexDigits[remain]);
+    // Native integer conversion avoids allocating a reversed digit list and
+    // StringBuffer for every named CSS color.
+    final hex = number.toRadixString(16);
+    if (number < 0) {
+      // Arithmetic right shifts never reach zero for negative integers, so
+      // the old hand-written conversion loop could run forever.
+      return '-${hex.substring(1).padLeft(minDigits, '0')}';
     }
-
-    var invertResult = StringBuffer();
-    var paddings = minDigits - result.length;
-    while (paddings-- > 0) {
-      invertResult.write('0');
-    }
-    for (var i = result.length - 1; i >= 0; i--) {
-      invertResult.write(result[i]);
-    }
-
-    return invertResult.toString();
+    return hex.padLeft(minDigits, '0');
   }
 
   static String kindToString(int kind) => switch (kind) {

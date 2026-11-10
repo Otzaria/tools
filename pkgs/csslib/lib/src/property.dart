@@ -343,7 +343,14 @@ class Color implements _StyleProperty, ColorBase {
           ).toHexArgbString();
       }
     }
-    return null;
+
+    // Color.css should accept the same standard named colors as the CSS
+    // parser, including the transparent keyword with zero alpha.
+    if (color.toLowerCase() == 'transparent') return '00000000';
+    final named = TokenKind.matchColorName(color);
+    return named == null
+        ? null
+        : TokenKind.decimalToHex(TokenKind.colorValue(named), 6);
   }
 
   static int hexToInt(String hex) => int.parse(hex, radix: 16);
