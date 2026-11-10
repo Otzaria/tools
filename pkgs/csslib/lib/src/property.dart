@@ -309,8 +309,7 @@ class Color implements _StyleProperty, ColorBase {
         } else if (trimmed.endsWith('grad')) {
           degrees = parseNumber(trimmed.substring(0, trimmed.length - 4)) * 0.9;
         } else if (trimmed.endsWith('rad')) {
-          degrees =
-              parseNumber(trimmed.substring(0, trimmed.length - 3)) *
+          degrees = parseNumber(trimmed.substring(0, trimmed.length - 3)) *
               180 /
               math.pi;
         } else if (trimmed.endsWith('deg')) {
