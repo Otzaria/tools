@@ -29,9 +29,9 @@ void main() {
   });
 
   test('relative line height remains a ratio when the font scales', () {
-    final original = Font(
+    const original = Font(
       size: 10,
-      lineHeight: const LineHeight(1.5, inPixels: false),
+      lineHeight: LineHeight(1.5, inPixels: false),
     );
     final scaled = original.scale(2);
 
