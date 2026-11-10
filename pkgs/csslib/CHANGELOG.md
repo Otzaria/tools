@@ -11,6 +11,9 @@
   spaces, and join font family lists directly.
 - Serialize partial font styles without bogus family names or trailing
   spaces; preserve explicit line heights without font weight.
+- Serialize partial font styles without bogus family names, `nullpx` sizes or
+  trailing spaces; preserve explicit line heights without font weight and
+  keep the `px` unit on pixel line heights (a unitless value is a multiplier).
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
   for grayscale colors in `Hsla.fromRgba`, and keep the exact 8-bit alpha in
   `Color.rgba`, `Color.hsla` and `Hsla.fromArgbValue` instead of rounding it to
