@@ -28,9 +28,9 @@ void main() {
       lineHeight: LineHeight(24),
       family: ['Alef'],
     );
-    expect(font.cssExpression, '16px/24 Alef');
+    expect(font.cssExpression, '16px/24px Alef');
     const withoutFamily = Font(size: 16, lineHeight: LineHeight(24));
-    expect(withoutFamily.cssExpression, '16px/24');
+    expect(withoutFamily.cssExpression, '16px/24px');
   });
 
   test('font CSS keeps weight and explicit line height', () {
@@ -40,6 +40,24 @@ void main() {
       lineHeight: LineHeight(24),
       family: ['Alef'],
     );
-    expect(font.cssExpression, '700 16px/24 Alef');
+    expect(font.cssExpression, '700 16px/24px Alef');
+  });
+
+  test('unitless line height stays a multiplier', () {
+    const font = Font(
+      size: 16,
+      lineHeight: LineHeight(1.5, inPixels: false),
+      family: ['Alef'],
+    );
+    expect(font.cssExpression, '16px/1.5 Alef');
+  });
+
+  test('font CSS omits a missing size', () {
+    expect(const Font(weight: FontWeight.bold).cssExpression, '700');
+    expect(const Font(family: ['Alef']).cssExpression, 'Alef');
+    expect(
+      const Font(lineHeight: LineHeight(1.5, inPixels: false)).cssExpression,
+      '',
+    );
   });
 }

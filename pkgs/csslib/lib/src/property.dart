@@ -1106,12 +1106,20 @@ class Font implements _StyleProperty {
   /// values are missing the default value is used.
   @override
   String get cssExpression {
-    // Partial font properties need not specify a font family.
+    // Partial fonts omit absent parts. A unitless line height is a multiplier,
+    // so pixel heights need their unit.
     final families = _fontsAsString;
-    final familySuffix = families.isEmpty ? '' : ' $families';
-    final weightPrefix = weight == null ? '' : '$weight ';
-    final heightSuffix = lineHeight == null ? '' : '/$lineHeightInPixels';
-    return '$weightPrefix${size}px$heightSuffix$familySuffix';
+    final height = lineHeight;
+    final sizePart = size == null
+        ? null
+        : height == null
+            ? '${size}px'
+            : '${size}px/${height.height}${height.inPixels ? 'px' : ''}';
+    return [
+      if (weight != null) '$weight',
+      if (sizePart != null) sizePart,
+      if (families.isNotEmpty) families,
+    ].join(' ');
   }
 
   Font scale(num ratio) {
