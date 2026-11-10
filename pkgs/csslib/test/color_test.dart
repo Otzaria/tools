@@ -18,6 +18,28 @@ void main() {
       final color = Color.css('rgba(0, 0, 255, 1.0)');
       expect(color, equals(Color.createRgba(0, 0, 255, 1.0)));
     });
+
+    test('numeric Color constructor preserves fractional alpha', () {
+      expect(Color(0xff0000, 0).toHexArgbString(), '00ff0000');
+      expect(Color(0xff0000, 0.5).toHexArgbString(), '80ff0000');
+      expect(Color(0xff0000, 1).toHexArgbString(), 'ffff0000');
+    });
+
+    test('CSS short hex colors are expanded', () {
+      expect(Color.css('#F00'), Color(0xff0000));
+      expect(Color.css('#f008').toHexArgbString(), '88ff0000');
+    });
+
+    test('CSS eight-digit hex uses rrggbbaa order', () {
+      expect(Color.css('#ff000080').toHexArgbString(), '80ff0000');
+      expect(Color.css('  #FF0000  '), Color(0xff0000));
+    });
+
+    test('empty and malformed CSS hex is rejected predictably', () {
+      expect(() => Color.css(''), throwsFormatException);
+      expect(() => Color.css('  '), throwsFormatException);
+      expect(() => Color.css('#12'), throwsFormatException);
+    });
   });
 
   group('named colors', () {
