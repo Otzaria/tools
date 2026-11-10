@@ -22,6 +22,17 @@ void main() {
     );
   });
 
+  test('line height is retained without explicit font weight', () {
+    const font = Font(
+      size: 16,
+      lineHeight: LineHeight(24),
+      family: ['Alef'],
+    );
+    expect(font.cssExpression, '16px/24 Alef');
+    expect(const Font(size: 16, lineHeight: LineHeight(24)).cssExpression,
+        '16px/24');
+  });
+
   test('font CSS keeps weight and explicit line height', () {
     const font = Font(
       size: 16,
