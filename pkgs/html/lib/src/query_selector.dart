@@ -40,20 +40,39 @@ class SelectorEvaluator extends Visitor {
     return visitSelectorGroup(selector);
   }
 
+  // Explicit DFS preserves document order without recursive calls, which
+  // could overflow on deeply nested HTML documents.
   Element? querySelector(Node root, SelectorGroup selector) {
-    for (var element in root.nodes.whereType<Element>()) {
-      if (matches(element, selector)) return element;
-      final result = querySelector(element, selector);
-      if (result != null) return result;
+    final stack = <Iterator<Node>>[root.nodes.iterator];
+    while (stack.isNotEmpty) {
+      final cursor = stack.last;
+      if (!cursor.moveNext()) {
+        stack.removeLast();
+        continue;
+      }
+      final node = cursor.current;
+      if (node is Element) {
+        if (matches(node, selector)) return node;
+        if (node.nodes.isNotEmpty) stack.add(node.nodes.iterator);
+      }
     }
     return null;
   }
 
   void querySelectorAll(
       Node root, SelectorGroup selector, List<Element> results) {
-    for (var element in root.nodes.whereType<Element>()) {
-      if (matches(element, selector)) results.add(element);
-      querySelectorAll(element, selector, results);
+    final stack = <Iterator<Node>>[root.nodes.iterator];
+    while (stack.isNotEmpty) {
+      final cursor = stack.last;
+      if (!cursor.moveNext()) {
+        stack.removeLast();
+        continue;
+      }
+      final node = cursor.current;
+      if (node is Element) {
+        if (matches(node, selector)) results.add(node);
+        if (node.nodes.isNotEmpty) stack.add(node.nodes.iterator);
+      }
     }
   }
 
@@ -142,19 +161,17 @@ class SelectorEvaluator extends Visitor {
 
       // http://dev.w3.org/csswg/selectors-4/#the-root-pseudo
       case 'root':
-        // TODO(jmesserly): fix when we have a .ownerDocument pointer
-        // return _element == _element.ownerDocument.rootElement;
-        return _element!.localName == 'html' && _element!.parentNode == null;
+        return _element!.parentNode is Document;
 
       // http://dev.w3.org/csswg/selectors-4/#the-empty-pseudo
       case 'empty':
-        return _element!.nodes
-            .any((n) => !(n is Element || n is Text && n.text.isNotEmpty));
+        return !_element!.nodes
+            .any((n) => n is Element || n is Text && n.data.isNotEmpty);
 
       // http://dev.w3.org/csswg/selectors-4/#the-blank-pseudo
       case 'blank':
-        return _element!.nodes.any((n) => !(n is Element ||
-            n is Text && n.text.runes.any((r) => !isWhitespaceCC(r))));
+        return !_element!.nodes.any((n) => n is Element ||
+            n is Text && n.data.runes.any((r) => !isWhitespaceCC(r)));
 
       // http://dev.w3.org/csswg/selectors-4/#the-first-child-pseudo
       case 'first-child':
@@ -228,9 +245,22 @@ class SelectorEvaluator extends Visitor {
 
           final numericLiteral = literal.value as num;
           final parent = _element!.parentNode;
-          return parent != null &&
-              numericLiteral > 0 &&
-              parent.nodes.indexOf(_element) == numericLiteral;
+          if (parent == null ||
+              !numericLiteral.isFinite ||
+              numericLiteral <= 0 ||
+              numericLiteral != numericLiteral.toInt()) {
+            return false;
+          }
+          var index = 0;
+          for (final sibling in parent.nodes) {
+            if (sibling is Element) {
+              index++;
+              if (identical(sibling, _element)) {
+                return index == numericLiteral;
+              }
+            }
+          }
+          return false;
         }
         break;
 
