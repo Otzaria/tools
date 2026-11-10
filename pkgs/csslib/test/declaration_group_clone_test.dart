@@ -7,6 +7,8 @@ import 'package:csslib/visitor.dart';
 import 'package:source_span/source_span.dart';
 import 'package:test/test.dart';
 
+import 'testing.dart';
+
 void main() {
   test('cloning a group preserves terms and detaches its list', () {
     final group = GroupTerm(null)
@@ -48,5 +50,22 @@ void main() {
     expect(copy.badUsage, isTrue);
     copy.badUsage = false;
     expect(original.badUsage, isTrue);
+  });
+
+  test('included mixin declarations keep groups and IE7 flags', () {
+    final errors = <Message>[];
+    final sheet = compileCss('''
+@mixin m {
+  *zoom: 1;
+  width: (2 5);
+}
+div { @include m; }''', errors: errors, opts: simpleOptions);
+
+    expect(errors, isEmpty);
+    expect(prettyPrint(sheet), '''
+div {
+  *zoom: 1;
+  width: (2 5);
+}''');
   });
 }
