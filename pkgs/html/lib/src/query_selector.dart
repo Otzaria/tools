@@ -10,6 +10,7 @@ import 'package:csslib/visitor.dart';
 
 import '../dom.dart';
 import 'constants.dart' show isWhitespaceCC;
+import 'css_class_set.dart' show hasHtmlClassToken;
 
 Element? querySelector(Node node, String selector) =>
     SelectorEvaluator().querySelector(node, _parseSelectorList(selector));
@@ -308,7 +309,7 @@ class SelectorEvaluator extends Visitor {
 
   @override
   bool visitClassSelector(ClassSelector node) =>
-      _element!.classes.contains(node.name);
+      hasHtmlClassToken(_element!.className, node.name);
 
   // TODO(jmesserly): negation should support any selectors in level 4,
   // not just simple selectors.
