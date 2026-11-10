@@ -9,6 +9,8 @@
   preserving compact `url()` representation.
 - Fix fractional alpha in the numeric `Color` constructor and normalize CSS
   short and eight-digit hex colors, with validation of malformed input.
+  `Color.css` also accepts named colors and `transparent`, and
+  `Rgba.fromString`/`Hsla.fromString` now parse their argument only once.
 - Fix the values of the `aliceblue` color keyword and the `Color.aliceBlue`,
   `Color.antiqueWhite` and `Color.peru` constants.
 - Fix unhandled exceptions (`RangeError`, `FormatException`, `StateError`,

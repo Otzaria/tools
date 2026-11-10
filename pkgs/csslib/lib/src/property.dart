@@ -219,6 +219,8 @@ class Color implements _StyleProperty, ColorBase {
   static const int _hslCss = 3;
   static const int _hslaCss = 4;
 
+  static final _hexDigits = RegExp(r'^[0-9a-fA-F]+$');
+
   /// Parse CSS expressions of the from #rgb, rgb(r,g,b), rgba(r,g,b,a),
   /// hsl(h,s,l), hsla(h,s,l,a) and SVG colors (e.g., darkSlateblue, etc.) and
   /// convert to argb.
@@ -239,10 +241,11 @@ class Color implements _StyleProperty, ColorBase {
         }
         digits = expanded.toString();
       }
-      if (digits.length != 6 && digits.length != 8) {
+      // int.parse also accepts a sign and surrounding whitespace.
+      if ((digits.length != 6 && digits.length != 8) ||
+          !_hexDigits.hasMatch(digits)) {
         throw FormatException('Invalid CSS hexadecimal color', value);
       }
-      Color.hexToInt(digits); // Validate hexadecimal digits.
       if (digits.length == 8) {
         // CSS #rrggbbaa is stored internally as aarrggbb.
         return (digits.substring(6) + digits.substring(0, 6)).toLowerCase();
