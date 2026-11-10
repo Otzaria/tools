@@ -2,25 +2,18 @@
 
 - Correct `Font.hashCode` for partial/empty font styles and distribute hashes
   across font families and other properties, avoiding hash-table collisions.
-- Preserve fixed/relative line heights and independent font-family lists
-  when scaling fonts.
 - `Font.scale` keeps the line height (scaling pixel heights and keeping
   relative ratios), copies the font-family list, and no longer throws when
   the font size is unspecified.
-- Serialize partial font styles without bogus `ul` family names or trailing
-  spaces, and join font family lists directly.
-- Serialize partial font styles without bogus family names or trailing
-  spaces; preserve explicit line heights without font weight.
 - Serialize partial font styles without bogus family names, `nullpx` sizes or
   trailing spaces; preserve explicit line heights without font weight and
-  keep the `px` unit on pixel line heights (a unitless value is a multiplier).
+  keep the `px` unit on pixel line heights (a unitless value is a multiplier);
+  include the font style and variant.
 - Deep-clone selector groups, selector sequences, identifiers, functional
   pseudo-selector arguments, and legacy pseudo-element flags instead of
   sharing mutable AST nodes between the original and its clone.
 - Preserve nested group terms, IE7-prefixed declaration flags, and variable
   usage state when cloning CSS expression/declaration nodes.
-- Preserve Dart style priorities when cloning and detach mutable font-family
-  lists from cloned font expressions.
 - Deep-clone declaration style payloads and preserve Dart style priorities;
   detach mutable font-family lists in cloned font expressions.
 - Fix `Rgba.fromArgbValue`, `Rgba.argbValue` and `Hsla.color`, preserve alpha
