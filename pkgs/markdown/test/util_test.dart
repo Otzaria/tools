@@ -113,6 +113,17 @@ void main() {
       expect(decodeHtmlCharacters('&#65;'), 'A');
     });
   });
+
+  group('escapePunctuation', () {
+    test('keeps unescaped content intact', () {
+      expect(escapePunctuation('fence language'), 'fence language');
+    });
+
+    test('removes punctuation escapes but not ordinary backslashes', () {
+      expect(escapePunctuation(r'\*escaped\!'), '*escaped!');
+      expect(escapePunctuation(r'\a'), r'\a');
+    });
+  });
 }
 
 extension on Line {
