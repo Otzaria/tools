@@ -1,5 +1,7 @@
 ## 7.4.1-wip
 
+* Treat horizontal tabs as delimiters between fenced code language and
+  metadata, and skip punctuation unescaping when no backslashes are present.
 * Avoid regular-expression work when classifying blank lines and dedenting Markdown blocks; scan ASCII whitespace directly while retaining partial-tab handling.
 * Reduce allocations when rendering single-line HTML text nodes and reset renderer traversal state correctly when a `HtmlRenderer` instance is reused.
 * Reduce allocations when rendering single-line text nodes in `HtmlRenderer`.
