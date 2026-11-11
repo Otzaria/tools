@@ -10,6 +10,10 @@
 * Reuse the regular expressions for task-list markers, heading anchors,
   percent-encoded link destinations, and autolink entity suffixes instead of
   creating them on every call, and match each task-list marker only once.
+* Build Markdown table row AST cells directly and stop reading discarded columns once the header width is reached, reducing allocations for large and malformed tables.
+* Build table cells directly in `TableSyntax` and stop reading a body row once
+  the delimiter row's column count is reached, so cells that would be
+  discarded are never allocated.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
