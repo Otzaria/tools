@@ -18,6 +18,7 @@
   discarded are never allocated.
 * Reuse HTML escape converters and skip HTML entity matching for strings without ampersands, reducing allocations during inline and code-block parsing.
 * Sort footnote definitions by their original case-insensitive labels rather than URI-encoded HTML IDs, preserving first-reference order for Unicode and escaped labels.
+* Preserve existing percent-encoded sequences in extended autolink destinations instead of double-encoding their percent signs; still escape invalid percent sequences.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
