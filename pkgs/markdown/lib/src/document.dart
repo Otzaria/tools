@@ -124,20 +124,32 @@ class Document {
   List<Node> parseInline(String text) => InlineParser(text, this).parse();
 
   void _parseInlineContent(List<Node> nodes) {
-    final stack = <(List<Node>, int)>[(nodes, 0)];
+    final stack = <_InlineContentFrame>[_InlineContentFrame(nodes)];
     while (stack.isNotEmpty) {
-      final (currentNodes, index) = stack.removeLast();
-      for (var i = index; i < currentNodes.length; i++) {
-        final node = currentNodes[i];
-        if (node is UnparsedContent) {
-          final inlineNodes = parseInline(node.textContent);
-          currentNodes.removeAt(i);
-          currentNodes.insertAll(i, inlineNodes);
-          i += inlineNodes.length - 1;
-        } else if (node is Element && node.children != null) {
-          stack.add((currentNodes, i + 1));
-          stack.add((node.children!, 0));
-          break;
+      final frame = stack.last;
+      if (frame.index == frame.nodes.length) {
+        final replacement = frame.replacement;
+        if (replacement != null) {
+          // Replace each siblings list just once: repeated removeAt/insertAll
+          // is quadratic when many placeholders share the same parent.
+          frame.nodes
+            ..clear()
+            ..addAll(replacement);
+        }
+        stack.removeLast();
+        continue;
+      }
+
+      final node = frame.nodes[frame.index++];
+      if (node is UnparsedContent) {
+        frame.replacement ??= frame.nodes.sublist(0, frame.index - 1);
+        frame.replacement!.addAll(parseInline(node.textContent));
+      } else {
+        frame.replacement?.add(node);
+        if (node is Element && node.children != null) {
+          // Keep the original depth-first parse order (not breadth-first):
+          // footnote numbering depends on the order of inline references.
+          stack.add(_InlineContentFrame(node.children!));
         }
       }
     }
@@ -210,6 +222,15 @@ class Document {
       }
     }
   }
+}
+
+/// A frame for in-order, iterative expansion of inline placeholders.
+final class _InlineContentFrame {
+  final List<Node> nodes;
+  int index = 0;
+  List<Node>? replacement;
+
+  _InlineContentFrame(this.nodes);
 }
 
 extension _ElementExt on Element {
