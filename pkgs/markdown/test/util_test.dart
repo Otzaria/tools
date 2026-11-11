@@ -60,6 +60,23 @@ void main() {
       expect('  \tfoo'.indentation(), 4);
     });
   });
+
+  group('normalizeLinkLabel', () {
+    test('folds case and collapses ASCII whitespace', () {
+      expect(normalizeLinkLabel('  HeLLo \t WOrld '), 'hello world');
+      expect(normalizeLinkLabel('already lowercase'), 'already lowercase');
+    });
+
+    test('preserves characters following expanding case folds', () {
+      expect(normalizeLinkLabel('\u0130X'), 'i\u0307x');
+      expect(normalizeLinkLabel('Stra\u00dfe'), 'strasse');
+    });
+
+    test('normalizes long mixed-case labels without repeated copies', () {
+      final label = 'AbC' * 10000;
+      expect(normalizeLinkLabel(label), 'abc' * 10000);
+    });
+  });
 }
 
 extension on Line {
