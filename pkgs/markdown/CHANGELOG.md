@@ -1,5 +1,6 @@
 ## 7.4.1-wip
 
+* Expand adjacent inline placeholders in linear time by batching replacements within each sibling list while keeping nested footnote order.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
