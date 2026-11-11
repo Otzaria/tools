@@ -6,6 +6,10 @@
 * Fix a reused `HtmlRenderer` trimming the leading whitespace of the first
   text node of a new render after a previous render ended with `p`, `li` or
   `br`.
+* Reuse regular expressions for task-list markers, heading anchors, percent-encoded link destinations, and autolink suffixes; avoid testing each task marker twice.
+* Reuse the regular expressions for task-list markers, heading anchors,
+  percent-encoded link destinations, and autolink entity suffixes instead of
+  creating them on every call, and match each task-list marker only once.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
