@@ -24,6 +24,8 @@
 * Sort footnote definitions by their original case-insensitive labels rather than URI-encoded HTML IDs, preserving first-reference order for Unicode and escaped labels.
 * Preserve existing percent-encoded sequences in extended autolink destinations instead of double-encoding their percent signs; still escape invalid percent sequences.
 * Flatten nested AST element text iteratively into one buffer instead of repeatedly concatenating intermediate strings; preserve specialized text getters on subclasses.
+* Accelerate parsing of ordinary Hebrew text (including nikud and cantillation) without custom inline syntaxes, and avoid a predicate callback on each inline parsing step.
+* Accelerate ordinary Hebrew parsing (including nikud and cantillation) for built-in CommonMark and GitHub extension sets while preserving custom inline syntax behavior; avoid a predicate callback on each inline parsing step.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
