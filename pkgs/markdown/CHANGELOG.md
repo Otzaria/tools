@@ -1,5 +1,6 @@
 ## 7.4.1-wip
 
+* Make case-folding link reference labels linear-time by constructing the folded string once instead of repeatedly replacing substrings.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
