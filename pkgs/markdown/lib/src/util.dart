@@ -38,14 +38,21 @@ String escapeAttributeCharactersValue(String text) => text
 ///
 /// [CommonMark spec] https://spec.commonmark.org/0.30/#link-label
 String normalizeLinkLabel(String label) {
-  var text = label.trim().replaceAll(_oneOrMoreWhitespacePattern, ' ');
+  final text = label.trim().replaceAll(_oneOrMoreWhitespacePattern, ' ');
+  StringBuffer? result;
   for (var i = 0; i < text.length; i++) {
-    final mapped = caseFoldingMap[text[i]];
-    if (mapped != null) {
-      text = text.replaceRange(i, i + 1, mapped);
+    final char = text[i];
+    final mapped = caseFoldingMap[char];
+    if (mapped == null) {
+      result?.write(char);
+    } else {
+      // Allocate only if a character actually needs folding. Replacing each
+      // character in a String would repeatedly copy the rest of a long label.
+      result ??= StringBuffer(text.substring(0, i));
+      result.write(mapped);
     }
   }
-  return text;
+  return result?.toString() ?? text;
 }
 
 /// Normalizes a link destination, including the process of HTML characters
