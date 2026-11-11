@@ -2,6 +2,10 @@
 
 * Treat horizontal tabs as delimiters between fenced code language and
   metadata, and skip punctuation unescaping when no backslashes are present.
+* Compute `Element.textContent` iteratively into a single buffer, so deeply
+  nested ASTs no longer overflow the stack and nested text is not copied at
+  every level. Overridden `textContent` getters on `Element` subclasses are
+  still used.
 * Avoid regular-expression work when classifying blank lines and dedenting Markdown blocks; scan ASCII whitespace directly while retaining partial-tab handling.
 * Reduce allocations when rendering single-line HTML text nodes and reset renderer traversal state correctly when a `HtmlRenderer` instance is reused.
 * Reduce allocations when rendering single-line text nodes in `HtmlRenderer`.
@@ -19,6 +23,7 @@
 * Reuse HTML escape converters and skip HTML entity matching for strings without ampersands, reducing allocations during inline and code-block parsing.
 * Sort footnote definitions by their original case-insensitive labels rather than URI-encoded HTML IDs, preserving first-reference order for Unicode and escaped labels.
 * Preserve existing percent-encoded sequences in extended autolink destinations instead of double-encoding their percent signs; still escape invalid percent sequences.
+* Flatten nested AST element text iteratively into one buffer instead of repeatedly concatenating intermediate strings; preserve specialized text getters on subclasses.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
