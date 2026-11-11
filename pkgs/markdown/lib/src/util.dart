@@ -14,11 +14,17 @@ import 'patterns.dart';
 final _oneOrMoreWhitespacePattern = RegExp('[ \n\r\t]+');
 final _percentEscapePattern = RegExp('%[0-9A-Fa-f]{2}');
 
+const _htmlEscapeWithApos = HtmlEscape(
+  HtmlEscapeMode(escapeApos: true, escapeLtGt: true, escapeQuot: true),
+);
+const _htmlEscapeWithoutApos = HtmlEscape(
+  HtmlEscapeMode(escapeLtGt: true, escapeQuot: true),
+);
+
 /// Escapes (`"`), (`<`), (`>`) and (`&`) characters.
 /// Escapes (`'`) if [escapeApos] is `true`.
-String escapeHtml(String html, {bool escapeApos = true}) => HtmlEscape(
-  HtmlEscapeMode(escapeApos: escapeApos, escapeLtGt: true, escapeQuot: true),
-).convert(html);
+String escapeHtml(String html, {bool escapeApos = true}) =>
+    (escapeApos ? _htmlEscapeWithApos : _htmlEscapeWithoutApos).convert(html);
 
 /// Escapes (`"`), (`<`) and (`>`) characters.
 String escapeHtmlAttribute(String text) =>
@@ -84,8 +90,13 @@ String normalizeLinkTitle(String title) =>
 
 ///  Decodes HTML entity and numeric character references, for example decode
 /// `&#35` to `#`.
-String decodeHtmlCharacters(String input) =>
-    input.replaceAllMapped(htmlCharactersPattern, decodeHtmlCharacterFromMatch);
+String decodeHtmlCharacters(String input) {
+  if (!input.contains('&')) return input;
+  return input.replaceAllMapped(
+    htmlCharactersPattern,
+    decodeHtmlCharacterFromMatch,
+  );
+}
 
 /// Decodes HTML entity and numeric character references from the given [match].
 String decodeHtmlCharacterFromMatch(Match match) {
