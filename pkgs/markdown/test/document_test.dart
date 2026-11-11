@@ -150,5 +150,69 @@ void main() {
       );
       expect(second, contains('href="#fn-b"'));
     });
+
+    test('expands many adjacent inline placeholders without quadratic splices', () {
+      const count = 3000;
+      final document = Document(
+        blockSyntaxes: [const _RepeatedInlineSyntax(count)],
+        withDefaultBlockSyntaxes: false,
+      );
+      final result = document.parse('parts');
+      final children = (result.single as Element).children!;
+
+      expect(children, hasLength(count));
+      expect(
+        children.every((node) => node is Element && node.tag == 'em'),
+        isTrue,
+      );
+      expect(children.first.textContent, 'part');
+      expect(children.last.textContent, 'part');
+    });
+
+    test('preserves depth-first inline parsing order across siblings', () {
+      final document = Document(
+        blockSyntaxes: [const _NestedInlineSyntax()],
+        withDefaultBlockSyntaxes: false,
+      );
+      final result = document.parse('nested');
+      final children = (result.single as Element).children!;
+      expect((children[0] as Element).children!.single.textContent, 'first');
+      expect(children[1].textContent, 'second');
+      expect((children[2] as Element).children!.single.textContent, 'third');
+    });
+
   });
+}
+
+class _RepeatedInlineSyntax extends BlockSyntax {
+  final int count;
+  const _RepeatedInlineSyntax(this.count);
+
+  @override
+  RegExp get pattern => RegExp(r'^parts$');
+
+  @override
+  Node parse(BlockParser parser) {
+    parser.advance();
+    return Element('p', [
+      for (var i = 0; i < count; i++) UnparsedContent('*part*'),
+    ]);
+  }
+}
+
+class _NestedInlineSyntax extends BlockSyntax {
+  const _NestedInlineSyntax();
+
+  @override
+  RegExp get pattern => RegExp(r'^nested$');
+
+  @override
+  Node parse(BlockParser parser) {
+    parser.advance();
+    return Element('div', [
+      Element('p', [UnparsedContent('first')]),
+      UnparsedContent('second'),
+      Element('p', [UnparsedContent('third')]),
+    ]);
+  }
 }
