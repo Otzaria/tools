@@ -170,17 +170,26 @@ void main() {
     });
 
     test('preserves depth-first inline parsing order across siblings', () {
+      // Footnotes are numbered in the order their references are parsed.
       final document = Document(
         blockSyntaxes: [const _NestedInlineSyntax()],
-        withDefaultBlockSyntaxes: false,
+        extensionSet: ExtensionSet.gitHubWeb,
       );
-      final result = document.parse('nested');
-      final children = (result.single as Element).children!;
-      expect((children[0] as Element).children!.single.textContent, 'first');
-      expect(children[1].textContent, 'second');
-      expect((children[2] as Element).children!.single.textContent, 'third');
+      final html = HtmlRenderer().render(
+        document.parseLines([
+          'nested',
+          '',
+          '[^a]: first',
+          '',
+          '[^b]: second',
+          '',
+          '[^c]: third',
+        ]),
+      );
+      expect(html, contains('<a href="#fn-a" id="fnref-a">1</a>'));
+      expect(html, contains('<a href="#fn-b" id="fnref-b">2</a>'));
+      expect(html, contains('<a href="#fn-c" id="fnref-c">3</a>'));
     });
-
   });
 }
 
@@ -210,9 +219,9 @@ class _NestedInlineSyntax extends BlockSyntax {
   Node parse(BlockParser parser) {
     parser.advance();
     return Element('div', [
-      Element('p', [UnparsedContent('first')]),
-      UnparsedContent('second'),
-      Element('p', [UnparsedContent('third')]),
+      Element('p', [UnparsedContent('first[^a]')]),
+      UnparsedContent('second[^b]'),
+      Element('p', [UnparsedContent('third[^c]')]),
     ]);
   }
 }
