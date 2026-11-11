@@ -69,7 +69,7 @@ void main() {
 
     test('preserves characters following expanding case folds', () {
       expect(normalizeLinkLabel('\u0130X'), 'i\u0307x');
-      expect(normalizeLinkLabel('Stra\u00dfe'), 'strasse');
+      expect(normalizeLinkLabel('Stra\u1e9ee'), 'strasse');
     });
 
     test('normalizes long mixed-case labels without repeated copies', () {
