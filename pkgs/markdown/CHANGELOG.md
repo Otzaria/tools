@@ -1,31 +1,37 @@
 ## 7.4.1-wip
 
-* Treat horizontal tabs as delimiters between fenced code language and
-  metadata, and skip punctuation unescaping when no backslashes are present.
-* Compute `Element.textContent` iteratively into a single buffer, so deeply
-  nested ASTs no longer overflow the stack and nested text is not copied at
-  every level. Overridden `textContent` getters on `Element` subclasses are
-  still used.
-* Avoid regular-expression work when classifying blank lines and dedenting Markdown blocks; scan ASCII whitespace directly while retaining partial-tab handling.
-* Reduce allocations when rendering single-line HTML text nodes and reset renderer traversal state correctly when a `HtmlRenderer` instance is reused.
+* Avoid regular-expression work when classifying blank lines and dedenting
+  Markdown blocks; scan ASCII whitespace directly while keeping partial-tab
+  handling.
 * Reduce allocations when rendering single-line text nodes in `HtmlRenderer`.
 * Fix a reused `HtmlRenderer` trimming the leading whitespace of the first
   text node of a new render after a previous render ended with `p`, `li` or
   `br`.
-* Reuse regular expressions for task-list markers, heading anchors, percent-encoded link destinations, and autolink suffixes; avoid testing each task marker twice.
 * Reuse the regular expressions for task-list markers, heading anchors,
   percent-encoded link destinations, and autolink entity suffixes instead of
   creating them on every call, and match each task-list marker only once.
-* Build Markdown table row AST cells directly and stop reading discarded columns once the header width is reached, reducing allocations for large and malformed tables.
 * Build table cells directly in `TableSyntax` and stop reading a body row once
   the delimiter row's column count is reached, so cells that would be
   discarded are never allocated.
-* Reuse HTML escape converters and skip HTML entity matching for strings without ampersands, reducing allocations during inline and code-block parsing.
-* Sort footnote definitions by their original case-insensitive labels rather than URI-encoded HTML IDs, preserving first-reference order for Unicode and escaped labels.
-* Preserve existing percent-encoded sequences in extended autolink destinations instead of double-encoding their percent signs; still escape invalid percent sequences.
-* Flatten nested AST element text iteratively into one buffer instead of repeatedly concatenating intermediate strings; preserve specialized text getters on subclasses.
-* Accelerate parsing of ordinary Hebrew text (including nikud and cantillation) without custom inline syntaxes, and avoid a predicate callback on each inline parsing step.
-* Accelerate ordinary Hebrew parsing (including nikud and cantillation) for built-in CommonMark and GitHub extension sets while preserving custom inline syntax behavior; avoid a predicate callback on each inline parsing step.
+* Reuse the HTML escape converters and skip HTML entity decoding for strings
+  without ampersands.
+* Split a fenced code block info string at the first space or tab, so a
+  tab no longer ends up inside the `language-` class (matching cmark and
+  commonmark.js). Also return early from `escapePunctuation` when the input
+  has no backslash.
+* Sort footnote definitions by their case-insensitive labels rather than
+  their URI-encoded HTML IDs, so Unicode and escaped labels keep
+  first-reference order.
+* Keep existing percent-encoded sequences in extended autolink destinations
+  instead of double-encoding their `%` signs. Invalid percent sequences are
+  still escaped.
+* Compute `Element.textContent` iteratively into a single buffer, so deeply
+  nested ASTs no longer overflow the stack and nested text is not copied at
+  every level. Overridden `textContent` getters on `Element` subclasses are
+  still used.
+* Speed up parsing of plain Hebrew text (including niqqud and cantillation)
+  when only built-in inline syntaxes are in use, and avoid a predicate
+  callback on each inline parsing step.
 * Skip the regular expression in `EmojiSyntax`, `AutolinkSyntax`,
   `CodeSyntax`, and `ColorSwatchSyntax` when the character at the current
   position cannot start a match. This makes inline parsing faster, mostly on
