@@ -151,7 +151,7 @@ void main() {
       expect(second, contains('href="#fn-b"'));
     });
 
-    test('expands many adjacent inline placeholders without quadratic splices', () {
+    test('expands adjacent inline placeholders without quadratic splices', () {
       const count = 3000;
       final document = Document(
         blockSyntaxes: [const _RepeatedInlineSyntax(count)],
