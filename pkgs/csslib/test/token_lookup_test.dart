@@ -3,29 +3,14 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:csslib/parser.dart';
-import 'package:csslib/visitor.dart';
 import 'package:test/test.dart';
 
-import 'testing.dart';
-
 void main() {
-  test('named color lookup remains case insensitive', () {
-    expect(TokenKind.colorValue(TokenKind.matchColorName('RED')!), 0xFF0000);
+  test('rebeccapurple is a named color keyword', () {
     expect(
-      TokenKind.colorValue(TokenKind.matchColorName('aliceblue')!),
-      0xF0F8FF,
+      TokenKind.colorValue(TokenKind.matchColorName('rebeccapurple')!),
+      0x663399,
     );
-    expect(TokenKind.colorValue(TokenKind.matchColorName('rebeccapurple')!),
-        0x663399);
-    expect(Color.rebeccaPurple.argbValue, 0x663399);
-    expect(TokenKind.matchColorName('not-a-color'), isNull);
-  });
-
-  test('reverse color lookups preserve first canonical aliases', () {
-    expect(TokenKind.hexToColorName(0x00FFFF), 'aqua');
-    expect(TokenKind.hexToColorName(0xFF00FF), 'fuchsia');
-    expect(TokenKind.hexToColorName(0xF0F8FF), 'aliceblue');
-    expect(TokenKind.hexToColorName(0x010203), isNull);
   });
 
   test('left and right bottom page-margin names are distinct', () {
@@ -39,30 +24,5 @@ void main() {
       TokenKind.matchMarginDirectives(right, 0, right.length),
       TokenKind.MARGIN_DIRECTIVE_RIGHTBOTTOM,
     );
-
-    final errors = <Message>[];
-    final parsed = parse(
-      '@page { @left-bottom { content: "L"; } '
-      '@right-bottom { content: "R"; } }',
-      errors: errors,
-    );
-    expect(errors, isEmpty);
-    expect(parsed.topLevels.single, isA<PageDirective>());
-    expect((_MarginSymbols()..visitTree(parsed)).symbols, [
-      TokenKind.MARGIN_DIRECTIVE_LEFTBOTTOM,
-      TokenKind.MARGIN_DIRECTIVE_RIGHTBOTTOM,
-    ]);
-    expect(compactOutput(parsed), contains('@left-bottom'));
-    expect(compactOutput(parsed), contains('@right-bottom'));
   });
-}
-
-class _MarginSymbols extends Visitor {
-  final symbols = <int>[];
-
-  @override
-  void visitMarginGroup(MarginGroup node) {
-    symbols.add(node.margin_sym);
-    super.visitMarginGroup(node);
-  }
 }

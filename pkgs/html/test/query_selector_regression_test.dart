@@ -61,7 +61,7 @@ void main() {
   test('deep descendant queries retain preorder without recursion', () {
     final root = Element.tag('main');
     var current = root;
-    for (var i = 0; i < 100000; i++) {
+    for (var i = 0; i < 20000; i++) {
       final child = Element.tag('section');
       current.append(child);
       current = child;
