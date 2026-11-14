@@ -152,7 +152,7 @@ class Color implements _StyleProperty, ColorBase {
       // Get alpha blending value 0..255
       var alpha = Color.hexToInt(_argb.substring(nextIndex, nextIndex + 2));
       // Convert to value from 0..1
-      a = alpha / 255;
+      a = double.parse((alpha / 255).toStringAsPrecision(2));
       nextIndex += 2;
     }
     var r = Color.hexToInt(_argb.substring(nextIndex, nextIndex + 2));
@@ -266,7 +266,7 @@ class Color implements _StyleProperty, ColorBase {
         type = _hslaCss;
         color = color.substring(5);
       } else {
-        throw UnsupportedError('CSS property not implemented');
+        throw FormatException('Unsupported CSS color', value);
       }
 
       color = color.substring(0, color.length - 1); // Strip close paren.
@@ -293,30 +293,13 @@ class Color implements _StyleProperty, ColorBase {
         return parseNumber(trimmed);
       }
 
-      int parseRgbChannel(String text) {
-        final trimmed = text.trim();
-        if (trimmed.endsWith('%')) {
-          return (parseFraction(trimmed) * 255).round();
-        }
-        return parseNumber(trimmed).toInt();
-      }
+      int parseRgbChannel(String text) => parseNumber(text).toInt();
 
       double parseHue(String text) {
         final trimmed = text.trim().toLowerCase();
-        double degrees;
-        if (trimmed.endsWith('turn')) {
-          degrees = parseNumber(trimmed.substring(0, trimmed.length - 4)) * 360;
-        } else if (trimmed.endsWith('grad')) {
-          degrees = parseNumber(trimmed.substring(0, trimmed.length - 4)) * 0.9;
-        } else if (trimmed.endsWith('rad')) {
-          degrees = parseNumber(trimmed.substring(0, trimmed.length - 3)) *
-              180 /
-              math.pi;
-        } else if (trimmed.endsWith('deg')) {
-          degrees = parseNumber(trimmed.substring(0, trimmed.length - 3));
-        } else {
-          degrees = parseNumber(trimmed);
-        }
+        final degrees = trimmed.endsWith('deg')
+            ? parseNumber(trimmed.substring(0, trimmed.length - 3))
+            : parseNumber(trimmed);
         // CSS hue is an angle, not the 0..1 fraction expected by Hsla.
         // Dart's `%` is never negative here, so -120 wraps to 240 too.
         return degrees % 360 / 360;
@@ -540,7 +523,6 @@ class Color implements _StyleProperty, ColorBase {
   static final Color plum = const Color.hex('dda0dd');
   static final Color powderBlue = const Color.hex('b0e0e6');
   static final Color purple = const Color.hex('800080');
-  static final Color rebeccaPurple = const Color.hex('663399');
   static final Color red = const Color.hex('ff0000');
   static final Color rosyBrown = const Color.hex('bc8f8f');
   static final Color royalBlue = const Color.hex('4169e1');
@@ -725,8 +707,8 @@ class Hsla implements _StyleProperty, ColorBase {
     var g = (value.toInt() & 0xff00) >> 8;
     var b = value.toInt() & 0xff;
 
-    // Keep the full 8-bit alpha precision for lossless ARGB round-trips.
-    a /= 255;
+    // Convert alpha to 0..1 from (0..255).
+    a = double.parse((a / 255).toStringAsPrecision(2));
 
     return _createFromRgba(r, g, b, a);
   }
@@ -1136,7 +1118,7 @@ class Font implements _StyleProperty {
           );
     return Font(
       size: size == null ? null : size! * ratio,
-      family: family?.toList(),
+      family: family,
       weight: weight,
       style: style,
       variant: variant,

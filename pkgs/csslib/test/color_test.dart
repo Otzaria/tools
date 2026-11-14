@@ -60,6 +60,10 @@ void main() {
     test('unknown color names throw a FormatException', () {
       expect(() => Color.css('notacolor'), throwsFormatException);
     });
+
+    test('unknown color functions throw a FormatException', () {
+      expect(() => Color.css('foo(1,2,3)'), throwsFormatException);
+    });
   });
 
   group('named colors', () {
@@ -72,6 +76,24 @@ void main() {
     test('aliceblue is parsed as #f0f8ff', () {
       final stylesheet = parseCss('a { color: aliceblue; }');
       expect(prettyPrint(stylesheet), 'a {\n  color: #f0f8ff;\n}');
+    });
+  });
+
+  group('named color lookup', () {
+    test('remains case insensitive', () {
+      expect(TokenKind.colorValue(TokenKind.matchColorName('RED')!), 0xFF0000);
+      expect(
+        TokenKind.colorValue(TokenKind.matchColorName('aliceblue')!),
+        0xF0F8FF,
+      );
+      expect(TokenKind.matchColorName('not-a-color'), isNull);
+    });
+
+    test('reverse lookups preserve first canonical aliases', () {
+      expect(TokenKind.hexToColorName(0x00FFFF), 'aqua');
+      expect(TokenKind.hexToColorName(0xFF00FF), 'fuchsia');
+      expect(TokenKind.hexToColorName(0xF0F8FF), 'aliceblue');
+      expect(TokenKind.hexToColorName(0x010203), isNull);
     });
   });
 }
