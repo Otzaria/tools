@@ -17,8 +17,7 @@
   without ampersands.
 * Split a fenced code block info string at the first space or tab, so a
   tab no longer ends up inside the `language-` class (matching cmark and
-  commonmark.js). Also return early from `escapePunctuation` when the input
-  has no backslash.
+  commonmark.js).
 * Sort footnote definitions by their case-insensitive labels rather than
   their URI-encoded HTML IDs, so Unicode and escaped labels keep
   first-reference order.
